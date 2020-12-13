@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define UNUSED(X) (void)(X)
+#include "util.h"
 
 static const char *prg_name = "kcc";
 
@@ -15,21 +15,27 @@ static void print_help() {
         "        -S    output raw assembly file\n\n"
         ;
 
-    printf("\n%s: [-b] [-h] [-o outfile] infile\n\n", prg_name);
+    printf("\n%s: [-c] [-h] [-S] [-o outfile] infile\n\n", prg_name);
     printf("%s\n", msg);
 }
 
 int main(int argc, char **argv) {
     int c;
+    int i;
     int dont_link;
     int assembly_output = 0;
     char *outfile = "a.out";
+    char *infile = NULL;
 
-    while ((c = getopt (argc, argv, "abc:")) != -1) {
+    while ((c = getopt(argc, argv, "hSco:")) != -1) {
         switch (c) {
             case 'o':
                 outfile = optarg;
                 break;
+
+            case 'h':
+                print_help();
+                exit(EXIT_SUCCESS);
 
             case 'S':
                 assembly_output = 1;
@@ -43,13 +49,25 @@ int main(int argc, char **argv) {
                 puts("unknown option");
                 print_help();
                 exit(EXIT_FAILURE);
-                break;
 
             default:
               print_help();
               exit(EXIT_FAILURE);
         }
     }
+
+    for (i = optind; i < argc; i++) {
+        /* TODO: allow for multiple input .c files */
+        infile = argv[i];
+        break;
+    }
+
+    if (!infile) {
+        puts("No input file specified");
+        print_help();
+        exit(EXIT_FAILURE);
+    }
+
     UNUSED(dont_link);
     UNUSED(outfile);
     UNUSED(assembly_output);
