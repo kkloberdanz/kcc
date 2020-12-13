@@ -8,20 +8,16 @@ EXTERN_INC=$(wildcard include/*.h)
 
 .PHONY: release
 release: kcc
-release: OPT:=-Ofast -march=haswell -mtune=haswell -flto
-
-.PHONY: native
-native: kcc
-native: OPT:=-Ofast -march=native -mtune=native -flto
+release: OPT:=-O2
 
 .PHONY: debug
 debug: kcc
 debug: OPT:=-O0 -ggdb3
 
-kcc: $(OBJ)
+kcc: $(OBJ) Makefile
 	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
 
-obj/%.o: src/%.c $(INC) $(EXTERN_INC)
+obj/%.o: src/%.c $(INC) $(EXTERN_INC) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 .PHONY: clean

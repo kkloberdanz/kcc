@@ -3,6 +3,14 @@
 #include <unistd.h>
 
 #include "util.h"
+#include "lex.h"
+
+struct Options {
+    char dont_link;
+    char assembly_output;
+    char *outfile;
+    char *infile;
+};
 
 static const char *prg_name = "kcc";
 
@@ -19,18 +27,16 @@ static void print_help() {
     printf("%s\n", msg);
 }
 
-int main(int argc, char **argv) {
+static void parse_options(int argc, char **argv, struct Options *options) {
     int c;
-    int i;
-    int dont_link;
-    int assembly_output = 0;
-    char *outfile = "a.out";
-    char *infile = NULL;
+    options->assembly_output = 0;
+    options->infile = NULL;
+    options->outfile = "a.out";
 
     while ((c = getopt(argc, argv, "hSco:")) != -1) {
         switch (c) {
             case 'o':
-                outfile = optarg;
+                options->outfile = optarg;
                 break;
 
             case 'h':
@@ -38,11 +44,11 @@ int main(int argc, char **argv) {
                 exit(EXIT_SUCCESS);
 
             case 'S':
-                assembly_output = 1;
+                options->assembly_output = 1;
                 break;
 
             case 'c':
-                dont_link = 1;
+                options->dont_link = 1;
                 break;
 
             case '?':
@@ -56,20 +62,48 @@ int main(int argc, char **argv) {
         }
     }
 
-    for (i = optind; i < argc; i++) {
-        /* TODO: allow for multiple input .c files */
-        infile = argv[i];
-        break;
-    }
+    /*
+     * TODO: allow for multiple input .c files
+     *     for (i = optind; i < argc; i++) {
+     *         options->infile = argv[i];
+     *         break;
+     *     }
+     *
+     */
+    options->infile = argv[optind];
 
-    if (!infile) {
+    if (!options->infile) {
         puts("No input file specified");
         print_help();
         exit(EXIT_FAILURE);
     }
+}
 
-    UNUSED(dont_link);
-    UNUSED(outfile);
-    UNUSED(assembly_output);
+int main(int argc, char **argv) {
+    struct Options options;
+    TokList *tokens = NULL;
+
+    /* Lexical analysis */
+    parse_options(argc, argv, &options);
+    tokens = lex(
+        options.infile,
+        options.outfile,
+        options.assembly_output,
+        options.dont_link
+    );
+
+    if (!tokens) {
+        err_msg("failed to get tokens\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Parse tokens to build Abstract Syntax Tree (AST) */
+    /* Transform AST into Intermediate Representation (IR) */
+    /* Optimize IR */
+    /* Transform IR into assembly */
+    /* Invoke assembler */
+    /* Invoke linker */
+
+    UNUSED(tokens);
     return 0;
 }
