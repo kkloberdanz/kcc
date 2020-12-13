@@ -4,23 +4,24 @@
 	.string	"hello world!"
 
 	.globl	main
+	.globl	inc
 	.globl	_start
 	.globl	_end
 	.type	main, @function
 
-_start:
 main:
 .LFB0:
 	.cfi_startproc
-	pushq	%rax
 	pushq	%rdi
-	movl	$.LC0, %edi
+	movq	$.LC0, %rdi
 	call	puts
 	popq	%rdi
-	popq	%rax
-	xorl	%eax, %eax
+	xorq	%rax, %rax
+	ret
 	.cfi_endproc
+_start:
+	call main
 _end:
-	movl	%eax, %ebx
-	movl	$0x1, %eax
+	movq	%rax, %rbx
+	movq	$0x1, %rax
 	int		$0x80

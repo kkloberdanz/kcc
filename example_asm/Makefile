@@ -6,3 +6,5 @@ hello: hello.s
 clean:
 	rm -f *.o
 	rm -f hello
+	rm -f core
+	rm -f vgcore*
