@@ -14,6 +14,10 @@ release: OPT:=-O2
 debug: kcc
 debug: OPT:=-O0 -ggdb3
 
+.PHONY: warn-everything
+warn-everything: kcc
+warn-everything: CC=clang -Weverything -Werror
+
 kcc: $(OBJ) Makefile
 	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
 

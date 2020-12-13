@@ -13,10 +13,11 @@ TokList *toklist_new(Token tok) {
     return ll;
 }
 
-void toklist_insert(TokList *before, TokList *new) {
+TokList *toklist_insert(TokList *before, TokList *new) {
     TokList *next = before->next;
     before->next = new;
     new->next = next;
+    return next;
 }
 
 void toklist_free(TokList *head) {
@@ -44,25 +45,21 @@ void toklist_print(TokList *head) {
     puts("]");
 }
 
-Token *tok_new(
+void tok_init(
+    Token *out,
     size_t lineno,
     size_t col,
-    char *repr,
+    const char *repr,
     TokenKind kind
 ) {
-    Token *tok = malloc(sizeof(*tok));
-    if (tok) {
-        tok->lineno = lineno;
-        tok->col = col;
-        tok->repr = strdup(repr);
-        tok->kind = kind;
-    }
-    return tok;
+    out->lineno = lineno;
+    out->col = col;
+    out->repr = strdup(repr);
+    out->kind = kind;
 }
 
 void tok_free(Token *tok) {
     if (tok) {
         free(tok->repr);
-        free(tok);
     }
 }

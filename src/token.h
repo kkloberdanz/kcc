@@ -37,6 +37,7 @@
 */
 
 typedef enum TokenKind {
+    TOK_ID,
     TOK_INTEGER,
     TOK_FLOAT,
     TOK_ASSIGN,
@@ -83,12 +84,24 @@ typedef struct TokList {
 
 TokList *toklist_new(Token tok);
 
-void toklist_insert(TokList *before, TokList *new);
+TokList *toklist_insert(TokList *before, TokList *new);
 
 void toklist_print(TokList *head);
 
 void toklist_free(TokList *head);
 
-TokList *toklist_merge(TokList *l1, TokList *l2);
+void tok_print(struct Token *tok);
+
+void toklist_print(TokList *head);
+
+void tok_init(
+    Token *tok,
+    size_t lineno,
+    size_t col,
+    const char *repr,
+    TokenKind kind
+);
+
+void tok_free(Token *tok);
 
 #endif /* TOKEN_H */
