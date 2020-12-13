@@ -12,11 +12,16 @@
 main:
 .LFB0:
 	.cfi_startproc
+	pushq	%rbp
+	movq	%rsp, %rbp
+
 	pushq	%rdi
 	movq	$.LC0, %rdi
 	call	puts
 	popq	%rdi
 	xorq	%rax, %rax
+	call	again
+	leave
 	ret
 	.cfi_endproc
 _start:
