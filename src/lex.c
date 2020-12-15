@@ -7,10 +7,27 @@
 
 #define TOK_SIZE 1024
 
-static char is_token(const char *tok) {
-    UNUSED(tok);
-    return 1;
-}
+#define PUSH_TOKEN() \
+    do { \
+        if (*current_tok) { \
+            tok_init(&tok, lineno, (1 + col) - strlen(current_tok), current_tok, TOK_ID); \
+            tok_print(&tok); \
+            putchar('\n'); \
+            curr = toklist_push(curr, toklist_new(tok)); \
+            idx = 0; \
+            memset(current_tok, 0, TOK_SIZE); \
+\
+            if (!head && curr) { \
+                head = curr; \
+            } \
+        } \
+    } while (0)
+
+#define UNGET_TOKEN() current_tok[--idx] = '\0'
+
+#define PUSH_CHAR(C) current_tok[idx++] = (C)
+
+#define NEXT_CHAR() current_tok[idx + 1]
 
 static TokList *parse_line(const char *line, const size_t lineno) {
     TokList *curr = NULL;
@@ -18,43 +35,115 @@ static TokList *parse_line(const char *line, const size_t lineno) {
     size_t col;
     char current_tok[TOK_SIZE] = {0};
     size_t idx = 0;
+    Token tok;
+    char in_string = 0;
 
-    for (col = 1; (line[col] != '\n') && (line[col] != '\0'); col++) {
-        char lookahead = line[col];
-        current_tok[idx++] = line[col - 1];
-        current_tok[idx++] = lookahead;
+    for (col = 0; line[col] != '\0'; col++) {
+        char ch = line[col];
+        char next;
 
-        /* try token with lookahead */
-        if (is_token(current_tok)) {
-            /* push token */
-            Token tok;
-            tok_init(&tok, lineno, col, current_tok, TOK_ID);
-            curr = toklist_push(curr, toklist_new(tok));
-            if (!head) {
-                head = curr;
+        if (in_string) {
+            PUSH_CHAR(ch);
+            if (ch != '"') {
+                continue;
             }
+        }
 
-            idx = 0;
-            col++;
-            memset(current_tok, 0, TOK_SIZE);
-        } else {
-            /* unget char in token */
-            current_tok[idx--] = '\0';
-            if (is_token(current_tok)) {
-                Token tok;
-                tok_init(&tok, lineno, col, current_tok, TOK_ID);
-                curr = toklist_push(curr, toklist_new(tok));
-                if (!head) {
-                    head = curr;
+        switch (ch) {
+            case '"':
+                PUSH_CHAR(ch);
+                in_string = !in_string;
+                break;
+
+            case ' ':
+            case '\r':
+            case '\t':
+                PUSH_TOKEN();
+                break;
+
+            case '\n':
+                PUSH_TOKEN();
+                goto exit;
+
+            case '=':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                if (next == '=') {
+                    PUSH_CHAR(next);
                 }
-            }
-            idx = 0;
-            memset(current_tok, 0, TOK_SIZE);
+                PUSH_TOKEN();
+                break;
+
+            case '+':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                switch (next) {
+                    case '+':
+                    case '=':
+                        PUSH_CHAR(next);
+                }
+                PUSH_TOKEN();
+                break;
+
+            case '-':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                switch (next) {
+                    case '-':
+                    case '=':
+                    case '>':
+                        PUSH_CHAR(next);
+                }
+                PUSH_TOKEN();
+                break;
+
+            case '>':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                switch (next) {
+                    case '>':
+                        PUSH_CHAR(next);
+                }
+                PUSH_TOKEN();
+                break;
+
+            case '<':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                switch (next) {
+                    case '<':
+                        PUSH_CHAR(next);
+                }
+                PUSH_TOKEN();
+                break;
+
+            case '(':
+            case ')':
+            case ';':
+            case '\'':
+            case '%':
+            case '!':
+            case '.':
+            case '#':
+                PUSH_TOKEN();
+                PUSH_CHAR(ch);
+                PUSH_TOKEN();
+                break;
+
+            default:
+                PUSH_CHAR(ch);
+                break;
         }
     }
 
+exit:
     return head;
 }
+
+#undef PUSH_TOKEN
+#undef UNGET_TOKEN
+#undef PUSH_CHAR
+#undef NEXT_CHAR
 
 TokList *lex(const char *infile) {
     char *line = NULL;

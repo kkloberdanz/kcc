@@ -41,7 +41,7 @@ void toklist_free(TokList *head) {
 }
 
 void tok_print(struct Token *tok) {
-    printf("{Tok: %s: line: %zu, col: %zu}", tok->repr, tok->lineno, tok->col);
+    printf("{Tok: '%s': line: %zu, col: %zu}", tok->repr, tok->lineno, tok->col);
 }
 
 void toklist_print(TokList *head) {
