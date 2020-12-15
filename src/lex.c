@@ -7,9 +7,6 @@
 
 #define TOK_SIZE 1024
 
-/* TODO: instead of just TOK_ID, create function to determine the kind of
- * token before pushing it
- */
 #define PUSH_TOKEN() \
     do { \
         if (*current_tok) { \
@@ -33,6 +30,9 @@
 
 #define NEXT_CHAR() current_tok[idx + 1]
 
+/*
+ * TODO: identifiy key words as special tokens
+ */
 static TokList *parse_line(const char *line, const size_t lineno) {
     TokList *curr = NULL;
     TokList *head = NULL;
@@ -71,6 +71,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '=':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 if (next == '=') {
                     PUSH_CHAR(next);
@@ -80,6 +81,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '+':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '+':
@@ -91,6 +93,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '*':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '=':
@@ -101,6 +104,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '/':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '=':
@@ -111,6 +115,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '-':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '-':
@@ -123,6 +128,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '>':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '>':
@@ -133,6 +139,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '<':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '<':
@@ -143,6 +150,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
 
             case '!':
                 PUSH_TOKEN();
+                PUSH_CHAR(ch);
                 next = NEXT_CHAR();
                 switch (next) {
                     case '=':
