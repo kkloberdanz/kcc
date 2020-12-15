@@ -80,18 +80,26 @@ static void parse_options(int argc, char **argv, struct Options *options) {
 }
 
 int main(int argc, char **argv) {
+    FILE *cpp_stream = NULL;
     struct Options options;
     TokList *tokens = NULL;
+    int status = 0;
+    char buf[1024];
+
+    parse_options(argc, argv, &options);
+
+    sprintf(buf, "/usr/bin/cpp %s", options.infile);
 
     /* Invoke cpp for preprocesser */
+    cpp_stream = popen(buf, "r");
 
     /* Lexical analysis */
-    parse_options(argc, argv, &options);
-    tokens = lex(options.infile);
+    tokens = lex(cpp_stream);
 
     if (!tokens) {
+        status = 1;
         err_msg("failed to get tokens\n");
-        exit(EXIT_FAILURE);
+        goto cleanup;
     }
 
     puts("tokens:");
@@ -104,6 +112,15 @@ int main(int argc, char **argv) {
     /* Invoke assembler */
     /* Invoke linker */
 
-    toklist_free(tokens);
-    return 0;
+cleanup:
+    if (cpp_stream) {
+        fclose(cpp_stream);
+    }
+    if (tokens) {
+        toklist_free(tokens);
+    }
+    if (cpp_stream) {
+        fclose(cpp_stream);
+    }
+    return status;
 }

@@ -10,7 +10,7 @@
 #define PUSH_TOKEN() \
     do { \
         if (*current_tok) { \
-            TokenKind kind = token_to_kind(current_tok); \
+            TokenKind kind = token_to_kind(current_tok, lineno, col); \
             tok_init(&tok, lineno, (1 + col) - strlen(current_tok), current_tok, kind); \
             tok_print(&tok); \
             putchar('\n'); \
@@ -159,6 +159,10 @@ static TokList *parse_line(const char *line, const size_t lineno) {
                 PUSH_TOKEN();
                 break;
 
+            case '{':
+            case '}':
+            case '[':
+            case ']':
             case '(':
             case ')':
             case ';':
@@ -170,6 +174,7 @@ static TokList *parse_line(const char *line, const size_t lineno) {
             case '~':
             case ',':
             case ':':
+            case '&':
                 PUSH_TOKEN();
                 PUSH_CHAR(ch);
                 PUSH_TOKEN();
@@ -190,19 +195,24 @@ exit:
 #undef PUSH_CHAR
 #undef NEXT_CHAR
 
-TokList *lex(const char *infile) {
+TokList *lex(FILE *infile) {
+    char src_file[TOK_SIZE];
     char *line = NULL;
     size_t n = 0;
     size_t lineno = 1;
+    int a, b, c; /* throw away the 3 trailing ints from the cpp output */
 
-    FILE *fp = fopen(infile, "r");
-    if (!fp) {
+    if (!infile) {
         return NULL;
     }
 
     TokList *curr = NULL;
     TokList *head = NULL;
-    while ((getline(&line, &n, fp)) > 0) {
+    while ((getline(&line, &n, infile)) > 0) {
+        if (*line == '#') {
+            sscanf(line, "# %zu %s %d %d %d", &lineno, src_file, &a, &b, &c);
+            continue;
+        }
         TokList *ll = parse_line(line, lineno);
 
         if (ll) {
@@ -213,9 +223,6 @@ TokList *lex(const char *infile) {
         }
         lineno++;
     }
-
-    fclose(fp);
-
 
     return head;
 }

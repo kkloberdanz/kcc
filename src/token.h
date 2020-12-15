@@ -119,6 +119,6 @@ void tok_init(
 
 void tok_free(Token *tok);
 
-TokenKind token_to_kind(const char *tok);
+TokenKind token_to_kind(const char *tok, size_t lineno, size_t col);
 
 #endif /* TOKEN_H */

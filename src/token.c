@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #include "token.h"
+#include "util.h"
 
 TokList *toklist_new(Token tok) {
     TokList *ll = malloc(sizeof(*ll));
@@ -188,7 +189,7 @@ void tok_free(Token *tok) {
     }
 }
 
-TokenKind token_to_kind(const char *tok) {
+TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
     /* TODO: pass in line and col for better error messages */
     switch (*tok) {
         case '0':
@@ -211,20 +212,12 @@ TokenKind token_to_kind(const char *tok) {
                     n_dots++;
                 } else {
                     if (!isdigit(c)) {
-                        fprintf(
-                            stderr,
-                            "syntax error: line: y, col: x invalid identifier: '%s'",
-                            tok
-                        );
+                        syntax_error(tok, lineno, col);
                         exit(1);
                     }
                 }
                 if (n_dots > 1) {
-                    fprintf(
-                        stderr,
-                        "syntax error: line: y, col: x '%s'",
-                        tok
-                    );
+                    syntax_error(tok, lineno, col);
                     exit(1);
                 }
             }
@@ -232,67 +225,103 @@ TokenKind token_to_kind(const char *tok) {
         }
 
         case '=':
-            if (strcmp(tok, "==") == 0) {
-                return TOK_EQ;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_EQ;
+                case '\0':
+                    return TOK_ASSIGN;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            return TOK_ASSIGN;
 
         case '*':
-            if (strcmp(tok, "*=") == 0) {
-                return TOK_MUL_ASSIGN;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_MUL_ASSIGN;
+                case '\0':
+                    return TOK_STAR;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            return TOK_STAR;
 
         case '/':
-            if (strcmp(tok, "/=") == 0) {
-                return TOK_DIV_ASSIGN;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_DIV_ASSIGN;
+                case '\0':
+                    return TOK_SLASH;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            return TOK_SLASH;
 
         case '!':
-            if (strcmp(tok, "!=") == 0) {
-                return TOK_NOT_EQ;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_NOT_EQ;
+                case '\0':
+                    return TOK_NOT;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            return TOK_NOT;
 
         case '>':
-            if (strcmp(tok, ">>") == 0) {
-                return TOK_RIGHT_SHIFT;
+            switch (tok[1]) {
+                case '>':
+                    return TOK_RIGHT_SHIFT;
+                case '=':
+                    return TOK_GE;
+                case '\0':
+                    return TOK_GT;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            if (strcmp(tok, ">=") == 0) {
-                return TOK_GE;
-            }
-            return TOK_GT;
 
         case '"':
             return TOK_STRING;
 
         case '<':
-            if (strcmp(tok, "<<") == 0) {
-                return TOK_LEFT_SHIFT;
+            switch (tok[1]) {
+                case '<':
+                    return TOK_LEFT_SHIFT;
+                case '=':
+                    return TOK_LE;
+                case '\0':
+                    return TOK_LT;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            if (strcmp(tok, "<=") == 0) {
-                return TOK_LE;
-            }
-            return TOK_LT;
 
         case '+':
-            if (strcmp(tok, "+=") == 0) {
-                return TOK_PLUS_ASSIGN;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_PLUS_ASSIGN;
+                case '+':
+                    return TOK_INC;
+                case '\0':
+                    return TOK_PLUS;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            if (strcmp(tok, "++") == 0) {
-                return TOK_INC;
-            }
-            return TOK_PLUS;
 
         case '-':
-            if (strcmp(tok, "-=") == 0) {
-                return TOK_MINUS_ASSIGN;
+            switch (tok[1]) {
+                case '=':
+                    return TOK_MINUS_ASSIGN;
+                case '-':
+                    return TOK_DEC;
+                case '\0':
+                    return TOK_MINUS;
+                default:
+                    syntax_error(tok, lineno, col);
+                    exit(1);
             }
-            if (strcmp(tok, "--") == 0) {
-                return TOK_DEC;
-            }
-            return TOK_MINUS;
 
         case '&':
             return TOK_AMPERSAND;
@@ -329,6 +358,9 @@ TokenKind token_to_kind(const char *tok) {
 
         case ')':
             return TOK_RPAREN;
+
+        case ',':
+            return TOK_COMMA;
 
         default:
             return TOK_ID;
