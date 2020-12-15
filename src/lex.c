@@ -223,6 +223,7 @@ TokList *lex(FILE *infile) {
         }
         lineno++;
     }
+    free(line);
 
     return head;
 }

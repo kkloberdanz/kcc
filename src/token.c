@@ -37,6 +37,7 @@ TokList *toklist_push(TokList *before, TokList *new) {
 void toklist_free(TokList *head) {
     while (head) {
         TokList *next = head->next;
+        tok_free(&head->tok);
         free(head);
         head = next;
     }

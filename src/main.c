@@ -84,14 +84,14 @@ int main(int argc, char **argv) {
     struct Options options;
     TokList *tokens = NULL;
     int status = 0;
-    char buf[1024];
+    char cpp_cmd[1024];
 
     parse_options(argc, argv, &options);
 
-    sprintf(buf, "/usr/bin/cpp %s", options.infile);
+    sprintf(cpp_cmd, "/usr/bin/cpp %s", options.infile);
 
     /* Invoke cpp for preprocesser */
-    cpp_stream = popen(buf, "r");
+    cpp_stream = popen(cpp_cmd, "r");
 
     /* Lexical analysis */
     tokens = lex(cpp_stream);
