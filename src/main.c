@@ -115,12 +115,11 @@ int main(int argc, char **argv) {
 cleanup:
     if (cpp_stream) {
         fclose(cpp_stream);
+        cpp_stream = NULL;
     }
     if (tokens) {
         toklist_free(tokens);
-    }
-    if (cpp_stream) {
-        fclose(cpp_stream);
+        tokens = NULL;
     }
     return status;
 }
