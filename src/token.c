@@ -75,3 +75,22 @@ void tok_free(Token *tok) {
         free(tok->repr);
     }
 }
+
+TokenKind token_to_kind(const char *tok) {
+    switch (*tok) {
+        case '=':
+            if (strcmp(tok, "==") == 0) {
+                return TOK_EQ;
+            }
+            return TOK_ASSIGN;
+
+        case '&':
+            return TOK_AMPERSAND;
+
+        case ';':
+            return TOK_SEMICOLON;
+
+        default:
+            return TOK_ID;
+    }
+}

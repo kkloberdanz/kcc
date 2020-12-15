@@ -12,10 +12,9 @@
 ">="          { return GE; }                                                    
 "<="          { return LE; }                                                    
 "!="          { return NE; }                                                    
-"=>"          { return FAT_ARROW; }                                             
+"->"          { return ARROW; }                                             
 "if"          { return IF; }                                                    
 "then"        { return THEN; }                                                  
-"->"          { return SLIM_ARROW; }                                            
 "else"        { return ELSE; }                                                  
 "("           { return LPAREN; }                                                
 ")"           { return RPAREN; }                                                
@@ -47,10 +46,8 @@ typedef enum TokenKind {
     TOK_GE,
     TOK_LE,
     TOK_NE,
-    TOK_FAT_ARROW,
     TOK_IF,
     TOK_THEN,
-    TOK_SLIM_ARROW,
     TOK_ELSE,
     TOK_LPAREN,
     TOK_RPAREN,
@@ -67,7 +64,8 @@ typedef enum TokenKind {
     TOK_SEMICOLON,
     TOK_COLON,
     TOK_COMMA,
-    TOK_QUOTE
+    TOK_QUOTE,
+    TOK_AMPERSAND
 } TokenKind;
 
 typedef struct Token {
@@ -105,5 +103,7 @@ void tok_init(
 );
 
 void tok_free(Token *tok);
+
+TokenKind token_to_kind(const char *tok);
 
 #endif /* TOKEN_H */

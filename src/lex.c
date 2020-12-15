@@ -13,7 +13,8 @@
 #define PUSH_TOKEN() \
     do { \
         if (*current_tok) { \
-            tok_init(&tok, lineno, (1 + col) - strlen(current_tok), current_tok, TOK_ID); \
+            TokenKind kind = token_to_kind(current_tok); \
+            tok_init(&tok, lineno, (1 + col) - strlen(current_tok), current_tok, kind); \
             tok_print(&tok); \
             putchar('\n'); \
             curr = toklist_push(curr, toklist_new(tok)); \
@@ -140,12 +141,21 @@ static TokList *parse_line(const char *line, const size_t lineno) {
                 PUSH_TOKEN();
                 break;
 
+            case '!':
+                PUSH_TOKEN();
+                next = NEXT_CHAR();
+                switch (next) {
+                    case '=':
+                        PUSH_CHAR(next);
+                }
+                PUSH_TOKEN();
+                break;
+
             case '(':
             case ')':
             case ';':
             case '\'':
             case '%':
-            case '!':
             case '.':
             case '#':
             case '^':
