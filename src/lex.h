@@ -3,11 +3,6 @@
 
 #include "token.h"
 
-TokList *lex(
-    const char *infile,
-    const char *outfile,
-    char assembly_output,
-    char dont_link
-);
+TokList *lex(const char *infile);
 
 #endif /* LEX_H */

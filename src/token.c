@@ -14,10 +14,22 @@ TokList *toklist_new(Token tok) {
 }
 
 TokList *toklist_insert(TokList *before, TokList *new) {
-    TokList *next = before->next;
-    before->next = new;
-    new->next = next;
-    return next;
+    if (before) {
+        TokList *next = before->next;
+        before->next = new;
+        new->next = next;
+    }
+    return new;
+}
+
+TokList *toklist_push(TokList *before, TokList *new) {
+    if (before) {
+        while (before->next) {
+            before = before->next;
+        }
+        before->next = new;
+    }
+    return new;
 }
 
 void toklist_free(TokList *head) {

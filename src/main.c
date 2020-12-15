@@ -83,19 +83,19 @@ int main(int argc, char **argv) {
     struct Options options;
     TokList *tokens = NULL;
 
+    /* Invoke cpp for preprocesser */
+
     /* Lexical analysis */
     parse_options(argc, argv, &options);
-    tokens = lex(
-        options.infile,
-        options.outfile,
-        options.assembly_output,
-        options.dont_link
-    );
+    tokens = lex(options.infile);
 
     if (!tokens) {
         err_msg("failed to get tokens\n");
         exit(EXIT_FAILURE);
     }
+
+    puts("tokens:");
+    toklist_print(tokens);
 
     /* Parse tokens to build Abstract Syntax Tree (AST) */
     /* Transform AST into Intermediate Representation (IR) */
@@ -104,6 +104,6 @@ int main(int argc, char **argv) {
     /* Invoke assembler */
     /* Invoke linker */
 
-    UNUSED(tokens);
+    toklist_free(tokens);
     return 0;
 }

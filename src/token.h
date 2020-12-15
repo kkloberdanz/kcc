@@ -86,6 +86,8 @@ TokList *toklist_new(Token tok);
 
 TokList *toklist_insert(TokList *before, TokList *new);
 
+TokList *toklist_push(TokList *before, TokList *new);
+
 void toklist_print(TokList *head);
 
 void toklist_free(TokList *head);

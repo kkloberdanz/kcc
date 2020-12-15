@@ -28,16 +28,11 @@ static TokList *parse_line(const char *line, const size_t lineno) {
         if (is_token(current_tok)) {
             /* push token */
             Token tok;
-            printf("pushing: %s\n", current_tok);
             tok_init(&tok, lineno, col, current_tok, TOK_ID);
-            if (curr) {
-                TokList *next = toklist_new(tok);
-                curr = toklist_insert(curr, next);
-            } else {
-                curr = toklist_new(tok);
+            curr = toklist_push(curr, toklist_new(tok));
+            if (!head) {
                 head = curr;
             }
-            toklist_print(head);
 
             idx = 0;
             col++;
@@ -47,30 +42,21 @@ static TokList *parse_line(const char *line, const size_t lineno) {
             current_tok[idx--] = '\0';
             if (is_token(current_tok)) {
                 Token tok;
-                printf("pushing: %s\n", current_tok);
                 tok_init(&tok, lineno, col, current_tok, TOK_ID);
-                if (curr) {
-                    TokList *next = toklist_new(tok);
-                    curr = toklist_insert(curr, next);
-                } else {
-                    curr = toklist_new(tok);
+                curr = toklist_push(curr, toklist_new(tok));
+                if (!head) {
                     head = curr;
                 }
-                toklist_print(head);
             }
             idx = 0;
             memset(current_tok, 0, TOK_SIZE);
         }
     }
+
     return head;
 }
 
-TokList *lex(
-    const char *infile,
-    const char *outfile,
-    char assembly_output,
-    char dont_link
-) {
+TokList *lex(const char *infile) {
     char *line = NULL;
     size_t n = 0;
     size_t lineno = 1;
@@ -80,19 +66,24 @@ TokList *lex(
         return NULL;
     }
 
+    TokList *curr = NULL;
+    TokList *head = NULL;
     while ((getline(&line, &n, fp)) > 0) {
-        TokList *tokens = parse_line(line, lineno);
-        lineno++;
+        TokList *ll = parse_line(line, lineno);
 
-        UNUSED(tokens);
+        if (ll) {
+            curr = toklist_push(curr, ll);
+            if (!head) {
+                head = curr;
+            }
+        }
+        lineno++;
     }
 
-    UNUSED(infile);
-    UNUSED(outfile);
-    UNUSED(assembly_output);
-    UNUSED(dont_link);
+    fclose(fp);
 
-    return NULL;
+
+    return head;
 }
 
 #undef TOK_SIZE
