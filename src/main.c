@@ -21,8 +21,8 @@ static void print_help() {
         "        -c    Don't invoke the linker\n\n"
         "        -h    Display this help menu, then exit\n\n"
         "        -o outfile\n"
-        "              write binary to outfile\n\n"
-        "        -S    output raw assembly file\n\n"
+        "              Write binary to outfile\n\n"
+        "        -S    Output raw assembly file\n\n"
     );
 }
 

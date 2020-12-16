@@ -204,7 +204,7 @@ static const char *kind_repr(TokenKind kind) {
 
 void tok_print(struct Token *tok) {
     printf(
-        "{Tok: '%s': kind: %s, line: %zu, col: %zu}",
+        "{tok: '%s', kind: %s, line: %zu, col: %zu}",
         tok->repr,
         kind_repr(tok->kind),
         tok->lineno,
