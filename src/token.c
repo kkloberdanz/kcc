@@ -142,6 +142,62 @@ static const char *kind_repr(TokenKind kind) {
             return "TOK_LEFT_SHIFT";
         case TOK_AMPERSAND:
             return "TOK_AMPERSAND";
+        case TOK_BREAK:
+            return "TOK_BREAK";
+        case TOK_CHAR:
+            return "TOK_CHAR";
+        case TOK_CONST:
+            return "TOK_CONST";
+        case TOK_CONTINUE:
+            return "TOK_CONTINUE";
+        case TOK_DEFAULT:
+            return "TOK_DEFAULT";
+        case TOK_DO:
+            return "TOK_DO";
+        case TOK_DOUBLE:
+            return "TOK_DOUBLE";
+        case TOK_ENUM:
+            return "TOK_ENUM";
+        case TOK_EXTERN:
+            return "TOK_EXTERN";
+        case TOK_AUTO:
+            return "TOK_AUTO";
+        case TOK_CASE:
+            return "TOK_CASE";
+        case TOK_RETURN:
+            return "TOK_RETURN";
+        case TOK_SIZEOF:
+            return "TOK_SIZEOF";
+        case TOK_SIGNED:
+            return "TOK_SIGNED";
+        case TOK_GOTO:
+            return "TOK_GOTO";
+        case TOK_INT:
+            return "TOK_INT";
+        case TOK_SHORT:
+            return "TOK_SHORT";
+        case TOK_FOR:
+            return "TOK_FOR";
+        case TOK_LONG:
+            return "TOK_LONG";
+        case TOK_REGISTER:
+            return "TOK_REGISTER";
+        case TOK_STRUCT:
+            return "TOK_STRUCT";
+        case TOK_SWITCH:
+            return "TOK_SWITCH";
+        case TOK_TYPEDEF:
+            return "TOK_TYPEDEF";
+        case TOK_UNSIGNED:
+            return "TOK_UNSIGNED";
+        case TOK_VOID:
+            return "TOK_VOID";
+        case TOK_VOLATILE:
+            return "TOK_VOLATILE";
+        case TOK_WHILE:
+            return "TOK_WHILE";
+        case TOK_STATIC:
+            return "TOK_STATIC";
     }
     return "(invalid tok)";
 }
@@ -359,6 +415,102 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
             return TOK_COMMA;
 
         default:
+            if (strcmp(tok, "auto") == 0) {
+                return TOK_AUTO;
+            }
+            if (strcmp(tok, "break") == 0) {
+                return TOK_BREAK;
+            }
+            if (strcmp(tok, "case") == 0) {
+                return TOK_CASE;
+            }
+            if (strcmp(tok, "char") == 0) {
+                return TOK_CHAR;
+            }
+            if (strcmp(tok, "const") == 0) {
+                return TOK_CONST;
+            }
+            if (strcmp(tok, "continue") == 0) {
+                return TOK_CONTINUE;
+            }
+            if (strcmp(tok, "default") == 0) {
+                return TOK_DEFAULT;
+            }
+            if (strcmp(tok, "do") == 0) {
+                return TOK_DO;
+            }
+            if (strcmp(tok, "double") == 0) {
+                return TOK_DOUBLE;
+            }
+            if (strcmp(tok, "else") == 0) {
+                return TOK_ELSE;
+            }
+            if (strcmp(tok, "enum") == 0) {
+                return TOK_ENUM;
+            }
+            if (strcmp(tok, "extern") == 0) {
+                return TOK_EXTERN;
+            }
+            if (strcmp(tok, "float") == 0) {
+                return TOK_FLOAT;
+            }
+            if (strcmp(tok, "for") == 0) {
+                return TOK_FOR;
+            }
+            if (strcmp(tok, "goto") == 0) {
+                return TOK_GOTO;
+            }
+            if (strcmp(tok, "if") == 0) {
+                return TOK_IF;
+            }
+            if (strcmp(tok, "int") == 0) {
+                return TOK_INT;
+            }
+            if (strcmp(tok, "long") == 0) {
+                return TOK_LONG;
+            }
+            if (strcmp(tok, "register") == 0) {
+                return TOK_REGISTER;
+            }
+            if (strcmp(tok, "return") == 0) {
+                return TOK_RETURN;
+            }
+            if (strcmp(tok, "short") == 0) {
+                return TOK_SHORT;
+            }
+            if (strcmp(tok, "signed") == 0) {
+                return TOK_SIGNED;
+            }
+            if (strcmp(tok, "sizeof") == 0) {
+                return TOK_SIZEOF;
+            }
+            if (strcmp(tok, "static") == 0) {
+                return TOK_STATIC;
+            }
+            if (strcmp(tok, "struct") == 0) {
+                return TOK_STRUCT;
+            }
+            if (strcmp(tok, "switch") == 0) {
+                return TOK_SWITCH;
+            }
+            if (strcmp(tok, "typedef") == 0) {
+                return TOK_TYPEDEF;
+            }
+            if (strcmp(tok, "union") == 0) {
+                return TOK_TYPEDEF;
+            }
+            if (strcmp(tok, "unsigned") == 0) {
+                return TOK_UNSIGNED;
+            }
+            if (strcmp(tok, "void") == 0) {
+                return TOK_VOID;
+            }
+            if (strcmp(tok, "volatile") == 0) {
+                return TOK_VOLATILE;
+            }
+            if (strcmp(tok, "while") == 0) {
+                return TOK_WHILE;
+            }
             return TOK_ID;
     }
 }
