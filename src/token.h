@@ -77,7 +77,6 @@ typedef enum TokenKind {
     TOK_HAT,
     TOK_RIGHT_SHIFT,
     TOK_LEFT_SHIFT,
-    TOK_HASH,
     TOK_DOT,
     TOK_STRING,
     TOK_AMPERSAND

@@ -175,7 +175,6 @@ static TokList *parse_line(const char *line, const size_t lineno) {
             case '\'':
             case '%':
             case '.':
-            case '#':
             case '^':
             case '~':
             case ',':

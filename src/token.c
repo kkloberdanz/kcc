@@ -110,8 +110,6 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_RBRACK";
         case TOK_SEMICOLON:
             return "TOK_SEMICOLON";
-        case TOK_HASH:
-            return "TOK_HASH";
         case TOK_COLON:
             return "TOK_COLON";
         case TOK_COMMA:
@@ -335,9 +333,6 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
 
         case '^':
             return TOK_HAT;
-
-        case '#':
-            return TOK_HASH;
 
         case '.':
             return TOK_DOT;
