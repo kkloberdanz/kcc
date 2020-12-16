@@ -197,7 +197,6 @@ exit:
 }
 
 #undef PUSH_TOKEN
-#undef UNGET_TOKEN
 #undef PUSH_CHAR
 #undef NEXT_CHAR
 
