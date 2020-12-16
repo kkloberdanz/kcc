@@ -245,7 +245,6 @@ void tok_free(Token *tok) {
 }
 
 TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
-    /* TODO: pass in line and col for better error messages */
     switch (*tok) {
         case '0':
         case '1':

@@ -36,9 +36,6 @@
 
 #define NEXT_CHAR() current_tok[idx + 1]
 
-/*
- * TODO: identifiy key words as special tokens
- */
 static TokList *parse_line(const char *line, const size_t lineno) {
     TokList *curr = NULL;
     TokList *head = NULL;
