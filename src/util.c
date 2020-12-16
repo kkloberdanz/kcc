@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "util.h"
+
 void err_msg(const char *msg) {
     const size_t len = strlen(msg);
     const char *prog_name = "kcc: ";
@@ -20,5 +22,4 @@ void syntax_error(const char *code, size_t lineno, size_t col) {
     fprintf(stderr, "syntax error: line: %zu, col: %zu: '%s'\n",
         lineno, col, code
     );
-    exit(1);
 }

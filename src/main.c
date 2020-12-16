@@ -16,16 +16,14 @@ static const char *prg_name = "kcc";
 
 static void print_help() {
     printf("\nkcc -- Kyle's C Compiler\n");
-    const char *msg = \
+    printf("\n%s: [-c] [-h] [-S] [-o outfile] infile\n\n", prg_name);
+    printf(
         "        -c    Don't invoke the linker\n\n"
         "        -h    Display this help menu, then exit\n\n"
         "        -o outfile\n"
         "              write binary to outfile\n\n"
         "        -S    output raw assembly file\n\n"
-        ;
-
-    printf("\n%s: [-c] [-h] [-S] [-o outfile] infile\n\n", prg_name);
-    printf("%s\n", msg);
+    );
 }
 
 static void parse_options(int argc, char **argv, struct Options *options) {

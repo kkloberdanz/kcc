@@ -204,20 +204,21 @@ TokList *lex(FILE *infile) {
     char *line = NULL;
     size_t n = 0;
     size_t lineno = 1;
+    TokList *curr = NULL;
+    TokList *head = NULL;
     int a, b, c; /* throw away the 3 trailing ints from the cpp output */
 
     if (!infile) {
         return NULL;
     }
 
-    TokList *curr = NULL;
-    TokList *head = NULL;
     while ((getline(&line, &n, infile)) > 0) {
+        TokList *ll = NULL;
         if (*line == '#') {
             sscanf(line, "# %zu %s %d %d %d", &lineno, src_file, &a, &b, &c);
             continue;
         }
-        TokList *ll = parse_line(line, lineno);
+        ll = parse_line(line, lineno);
 
         if (ll) {
             curr = toklist_push(curr, ll);

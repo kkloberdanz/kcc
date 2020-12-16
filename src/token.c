@@ -43,7 +43,7 @@ void toklist_free(TokList *head) {
     }
 }
 
-const char *kind_repr(TokenKind kind) {
+static const char *kind_repr(TokenKind kind) {
     /*
      * Generate this switch with Python
      * In [6]: for i in l:

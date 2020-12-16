@@ -8,7 +8,7 @@ EXTERN_INC=$(wildcard include/*.h)
 
 .PHONY: release
 release: kcc
-release: OPT:=-Os
+release: OPT:=-Os -s -flto -fvisibility=hidden
 
 .PHONY: debug
 debug: kcc
@@ -20,7 +20,7 @@ sanitize: OPT:=-O0 -ggdb3 -fsanitize=address
 
 .PHONY: warn-everything
 warn-everything: kcc
-warn-everything: CC=clang -Weverything -Werror
+warn-everything: CC=clang -Weverything -Werror -Wno-padded
 
 kcc: $(OBJ) Makefile
 	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
