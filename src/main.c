@@ -80,7 +80,8 @@ int main(int argc, char **argv) {
     FILE *cpp_stream = NULL;
     struct Options options;
     TokList *tokens = NULL;
-    int status = 0;
+    int status = 1;
+    int cpp_err;
     char cpp_cmd[1024];
 
     parse_options(argc, argv, &options);
@@ -89,12 +90,20 @@ int main(int argc, char **argv) {
 
     /* Invoke cpp for preprocesser */
     cpp_stream = popen(cpp_cmd, "r");
+    if (!cpp_stream) {
+        goto cleanup;
+    }
 
     /* Lexical analysis */
     tokens = lex(cpp_stream);
+    cpp_err = pclose(cpp_stream);
+    cpp_stream = NULL;
+    if (cpp_err) {
+        err_msg("failed to preprocess\n");
+        goto cleanup;
+    }
 
     if (!tokens) {
-        status = 1;
         err_msg("failed to get tokens\n");
         goto cleanup;
     }
@@ -109,9 +118,11 @@ int main(int argc, char **argv) {
     /* Invoke assembler */
     /* Invoke linker */
 
+    status = 0;
+
 cleanup:
     if (cpp_stream) {
-        fclose(cpp_stream);
+        pclose(cpp_stream);
         cpp_stream = NULL;
     }
     if (tokens) {
