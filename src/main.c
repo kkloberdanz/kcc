@@ -4,6 +4,7 @@
 
 #include "util.h"
 #include "lex.h"
+#include "parse.h"
 
 struct Options {
     char dont_link;
@@ -83,6 +84,7 @@ int main(int argc, char **argv) {
     int status = 1;
     int cpp_err;
     char cpp_cmd[1024];
+    AST *ast = NULL;
 
     parse_options(argc, argv, &options);
 
@@ -108,10 +110,9 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    puts("tokens:");
-    toklist_print(tokens);
-
     /* Parse tokens to build Abstract Syntax Tree (AST) */
+    ast = parse(tokens);
+
     /* Transform AST into Intermediate Representation (IR) */
     /* Optimize IR */
     /* Transform IR into assembly */
@@ -128,6 +129,10 @@ cleanup:
     if (tokens) {
         toklist_free(tokens);
         tokens = NULL;
+    }
+    if (ast) {
+        ast_free(ast);
+        ast = NULL;
     }
     return status;
 }

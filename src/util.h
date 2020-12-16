@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stddef.h>
+
 #define UNUSED(X) (void)(X)
 
 void err_msg(const char *msg);

@@ -12,8 +12,6 @@
         if (*current_tok) { \
             TokenKind kind = token_to_kind(current_tok, lineno, col); \
             tok_init(&tok, lineno, (1 + col) - strlen(current_tok), current_tok, kind); \
-            tok_print(&tok); \
-            putchar('\n'); \
             curr = toklist_push(curr, toklist_new(tok)); \
             idx = 0; \
             memset(current_tok, 0, TOK_SIZE); \
