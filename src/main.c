@@ -15,6 +15,7 @@ struct Options {
 static const char *prg_name = "kcc";
 
 static void print_help() {
+    printf("\nkcc -- Kyle's C Compiler\n");
     const char *msg = \
         "        -c    Don't invoke the linker\n\n"
         "        -h    Display this help menu, then exit\n\n"
@@ -52,9 +53,7 @@ static void parse_options(int argc, char **argv, struct Options *options) {
                 break;
 
             case '?':
-                puts("unknown option");
-                print_help();
-                exit(EXIT_FAILURE);
+                break;
 
             default:
               print_help();

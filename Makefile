@@ -8,7 +8,7 @@ EXTERN_INC=$(wildcard include/*.h)
 
 .PHONY: release
 release: kcc
-release: OPT:=-O2
+release: OPT:=-Os
 
 .PHONY: debug
 debug: kcc
