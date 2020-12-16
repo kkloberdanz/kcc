@@ -24,9 +24,15 @@
         } \
     } while (0)
 
-#define UNGET_TOKEN() current_tok[--idx] = '\0'
+#define PUSH_CHAR(C) \
+    do { \
+        if (idx > 1024) { \
+            syntax_error("token too long", lineno, col); \
+            exit(1); \
+        } \
+        current_tok[idx++] = (C); \
+    } while (0)
 
-#define PUSH_CHAR(C) current_tok[idx++] = (C)
 
 #define NEXT_CHAR() current_tok[idx + 1]
 
