@@ -43,7 +43,7 @@ void toklist_free(TokList *head) {
     }
 }
 
-static const char *kind_repr(TokenKind kind) {
+const char *kind_repr(TokenKind kind) {
     /*
      * Generate this switch with Python
      * In [6]: for i in l:
@@ -172,8 +172,6 @@ static const char *kind_repr(TokenKind kind) {
             return "TOK_SIGNED";
         case TOK_GOTO:
             return "TOK_GOTO";
-        case TOK_INT:
-            return "TOK_INT";
         case TOK_SHORT:
             return "TOK_SHORT";
         case TOK_FOR:
@@ -461,9 +459,6 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
             }
             if (strcmp(tok, "if") == 0) {
                 return TOK_IF;
-            }
-            if (strcmp(tok, "int") == 0) {
-                return TOK_INT;
             }
             if (strcmp(tok, "long") == 0) {
                 return TOK_LONG;

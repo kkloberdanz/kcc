@@ -19,7 +19,7 @@ void err_msg(const char *msg) {
 }
 
 void syntax_error(const char *code, size_t lineno, size_t col) {
-    fprintf(stderr, "syntax error: line: %zu, col: %zu: '%s'\n",
+    fprintf(stderr, "syntax error: line: %zu, col: %zu: %s\n",
         lineno, col, code
     );
 }

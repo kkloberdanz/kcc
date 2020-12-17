@@ -95,7 +95,6 @@ typedef enum TokenKind {
     TOK_SIZEOF,
     TOK_SIGNED,
     TOK_GOTO,
-    TOK_INT,
     TOK_SHORT,
     TOK_FOR,
     TOK_LONG,
@@ -147,5 +146,7 @@ void tok_init(
 void tok_free(Token *tok);
 
 TokenKind token_to_kind(const char *tok, size_t lineno, size_t col);
+
+const char *kind_repr(TokenKind kind);
 
 #endif /* TOKEN_H */
