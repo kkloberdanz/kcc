@@ -23,60 +23,77 @@ static void match(TokenKind kind) {
     }
 }
 
+static OpKind binop(void) {
+    Token t;
+    if (!tokens) {
+        syntax_error("out of tokens", 0, 0);
+        exit(1);
+    }
+    t = tokens->tok;
+    switch (t.kind) {
+        case TOK_PLUS:
+            match(TOK_PLUS);
+            return OP_ADD;
+        case TOK_MINUS:
+            match(TOK_MINUS);
+            return OP_MINUS;
+        case TOK_STAR:
+            match(TOK_STAR);
+            return OP_MUL;
+        case TOK_SLASH:
+            match(TOK_SLASH);
+            return OP_DIV;
+        default:
+            syntax_error("expecting an op", t.lineno, t.col);
+            exit(1);
+    }
+}
+
 static AST *expr(void) {
     AST *ast = NULL;
-    return ast;
-}
-
-static AST *statement_sequence(void) {
-    AST *ast = NULL;
-    return ast;
-}
-
-static AST *term(void) {
-    AST *ast = NULL;
+    AST *left = NULL;
+    OpKind op = OP_NOP;
     Token t = tokens->tok;
-    while ((t.kind == TOK_STAR) || (t.kind == TOK_SLASH)) {
-        match(t.kind);
-    }
-    return ast;
-}
-
-static AST *factor(void) {
-    char buf[2048];
-    AST *ast = NULL;
-    switch (tokens->tok.kind) {
-        case TOK_FLOAT:
+    switch (t.kind) {
         case TOK_INTEGER:
-            break;
-
-        case TOK_ID:
-            break;
-
-        case TOK_LPAREN:
-            match(TOK_LPAREN);
-            ast = expr();
-            match(TOK_RPAREN);
+            left = ast_int(tokens->tok.repr);
+            match(TOK_INTEGER);
+            if (tokens->tok.kind != TOK_SEMICOLON) {
+                op = binop();
+                ast = ast_new();
+                ast->left = left;
+                ast->op = op;
+                ast->right = expr();
+            } else {
+                return left;
+            }
             break;
 
         default:
-            sprintf(buf, "unexpected token: '%s'", tokens->tok.repr);
-            syntax_error(buf, tokens->tok.lineno, tokens->tok.col);
+            syntax_error(
+                "expecting an integer\n",
+                tokens->tok.lineno,
+                tokens->tok.col
+            );
             exit(1);
     }
     return ast;
 }
 
+static AST *statement(void) {
+    AST *ast = NULL;
+    ast = expr();
+    match(TOK_SEMICOLON);
+    return ast;
+}
+
 AST *parse(TokList *tks) {
     AST *ast = NULL;
-    return ast;
 
     tokens = tks;
-    ast = statement_sequence();
+    ast = statement();
     if (tokens) {
         syntax_error("unconsumed tokens", tokens->tok.lineno, tokens->tok.col);
     }
-    UNUSED(factor);
-    UNUSED(term);
     return ast;
 }

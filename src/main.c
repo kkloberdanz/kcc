@@ -5,6 +5,7 @@
 #include "util.h"
 #include "lex.h"
 #include "parse.h"
+#include "codegen.h"
 
 struct Options {
     char dont_link;
@@ -79,6 +80,7 @@ static void parse_options(int argc, char **argv, struct Options *options) {
 
 int main(int argc, char **argv) {
     FILE *cpp_stream = NULL;
+    FILE *output = NULL;
     struct Options options;
     TokList *tokens = NULL;
     int status = 1;
@@ -116,6 +118,8 @@ int main(int argc, char **argv) {
     /* Transform AST into Intermediate Representation (IR) */
     /* Optimize IR */
     /* Transform IR into assembly */
+    output = fopen(options.outfile, "w");
+    codegen(ast, output);
     /* Invoke assembler */
     /* Invoke linker */
 
@@ -133,6 +137,10 @@ cleanup:
     if (ast) {
         ast_free(ast);
         ast = NULL;
+    }
+    if (output) {
+        fclose(output);
+        output = NULL;
     }
     return status;
 }
