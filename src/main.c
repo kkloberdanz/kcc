@@ -114,11 +114,17 @@ int main(int argc, char **argv) {
 
     /* Parse tokens to build Abstract Syntax Tree (AST) */
     ast = parse(tokens);
+    if (!ast) {
+        goto cleanup;
+    }
 
     /* Transform AST into Intermediate Representation (IR) */
     /* Optimize IR */
     /* Transform IR into assembly */
     output = fopen(options.outfile, "w");
+    if (!output) {
+        goto cleanup;
+    }
     codegen(ast, output);
     /* Invoke assembler */
     /* Invoke linker */
