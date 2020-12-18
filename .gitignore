@@ -3,3 +3,4 @@
 kcc
 a.out
 core
+src/arch.c

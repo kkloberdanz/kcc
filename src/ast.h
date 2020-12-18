@@ -16,12 +16,12 @@ typedef struct AST {
     OpKind op;
 } AST;
 
+AST *ast_new(void);
+
 void ast_free(AST *ast);
 
 AST *ast_op(OpKind op);
 
 AST *ast_int(char *i);
-
-AST *ast_new(void);
 
 #endif /* AST_H */

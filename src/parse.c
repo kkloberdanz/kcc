@@ -24,6 +24,9 @@ static void match(TokenKind kind) {
 }
 
 static OpKind binop(void) {
+    /* TODO: operator precedence is not yet implemented
+     * order of operations is not yet being respected
+     */
     Token t;
     if (!tokens) {
         syntax_error("out of tokens", 0, 0);

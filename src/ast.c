@@ -1,11 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "ast.h"
 #include "util.h"
-
-void ast_free(AST *ast) {
-    UNUSED(ast);
-}
 
 AST *ast_new(void) {
     AST *ast = malloc(sizeof(*ast));
@@ -34,7 +31,16 @@ AST *ast_int(char *i) {
         ast->left = NULL;
         ast->right = NULL;
         ast->op = OP_NOP;
-        ast->repr = i;
+        ast->repr = strdup(i);
     }
     return ast;
+}
+
+void ast_free(AST *ast) {
+    if (ast) {
+        ast_free(ast->left);
+        ast_free(ast->right);
+        free(ast->repr);
+        free(ast);
+    }
 }

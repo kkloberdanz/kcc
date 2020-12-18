@@ -117,17 +117,23 @@ int main(int argc, char **argv) {
     if (!ast) {
         goto cleanup;
     }
+    toklist_free(tokens);
+    tokens = NULL;
 
-    /* Transform AST into Intermediate Representation (IR) */
-    /* Optimize IR */
-    /* Transform IR into assembly */
+    /* Transform AST into assembly */
     output = fopen(options.outfile, "w");
     if (!output) {
         goto cleanup;
     }
     codegen(ast, output);
+    ast_free(ast);
+    ast = NULL;
+
     /* Invoke assembler */
+    /* TODO */
+
     /* Invoke linker */
+    /* TODO */
 
     status = 0;
 

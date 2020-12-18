@@ -20,7 +20,7 @@ sanitize: OPT:=-O0 -ggdb3 -fsanitize=address
 
 .PHONY: warn-everything
 warn-everything: kcc
-warn-everything: CC=clang -Weverything -Werror -Wno-padded
+warn-everything: CC=clang -Weverything -Werror -Wno-padded -Wno-switch-enum
 
 kcc: $(OBJ) Makefile
 	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
