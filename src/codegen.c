@@ -5,6 +5,35 @@
 #include "codegen.h"
 #include "util.h"
 
+static void binop(AST *ast) {
+    cg_pop_64(1);
+    cg_pop_64(0);
+    switch (ast->op) {
+        case OP_ADD:
+            cg_add_64(0, 1, 0);
+            cg_push_64(0);
+            break;
+
+        case OP_MINUS:
+            cg_sub_64(0, 1, 0);
+            cg_push_64(0);
+            break;
+
+        case OP_DIV:
+            /* TODO */
+            break;
+
+        case OP_MUL:
+            cg_mul_64(0, 1, 0);
+            cg_push_64(0);
+            break;
+
+        case OP_NOP:
+            /* TODO */
+            break;
+    }
+}
+
 static void cg_traverse(AST *ast) {
     if (ast) {
         cg_traverse(ast->left);
@@ -12,28 +41,7 @@ static void cg_traverse(AST *ast) {
         if (ast->repr) {
             cg_push_64_literal(ast->repr);
         } else {
-            cg_pop_64(1);
-            cg_pop_64(0);
-            switch (ast->op) {
-                case OP_ADD:
-                    cg_add_64(0, 1, 0);
-                    cg_push_64(0);
-                    break;
-                case OP_MINUS:
-                    cg_sub_64(0, 1, 0);
-                    cg_push_64(0);
-                    break;
-                case OP_DIV:
-                    /* TODO */
-                    break;
-                case OP_MUL:
-                    cg_mul_64(0, 1, 0);
-                    cg_push_64(0);
-                    break;
-                case OP_NOP:
-                    /* TODO */
-                    break;
-            }
+            binop(ast);
         }
     }
 }

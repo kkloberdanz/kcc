@@ -21,6 +21,7 @@ static const char * const regs_8[] = {
 /* public */
 const size_t nregs_64 = sizeof(regs_64) / sizeof(*regs_64);
 const size_t nregs_32 = sizeof(regs_32) / sizeof(*regs_32);
+const size_t nregs_16 = sizeof(regs_16) / sizeof(*regs_16);
 const size_t nregs_8 = sizeof(regs_8) / sizeof(*regs_8);
 
 FILE *cg_out = NULL;
@@ -44,7 +45,7 @@ void cg_mov_64(int rdst, int rsrc) {
 }
 
 void cg_add_64(int rdst, int r1, int r2) {
-    cg_mov_64(r2, rdst);
+    cg_mov_64(rdst, r2);
     fprintf(cg_out, "\taddq\t%s, %s\n", regs_64[r1], regs_64[rdst]);
 }
 
@@ -98,7 +99,7 @@ void cg_begin(FILE *out) {
 
 void cg_end(void) {
     const char *preamble = \
-        "jmp _end\n"
+        "\tjmp _end\n"
         "_exit_fail:\n"
         "\tmovq	$0x1, %rax\n"
         "\tjmp _end\n"
@@ -107,8 +108,7 @@ void cg_end(void) {
         "\tjmp _end\n"
         "_end:\n"
         "\tmovq	%rax, %rdi\n" /* rdi, status to pass to exit_group */
-        "\tmovq	$0xe7, %rax\n" /* exit_group syscall */
-        "\tsyscall\n";
+        "\tcall\texit\n";
     fprintf(cg_out, "%s\n", preamble);
 }
 /* ------ */
