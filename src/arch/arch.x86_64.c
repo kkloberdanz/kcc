@@ -4,71 +4,85 @@
 #include "util.h"
 
 /* private */
-static const char * const regs_64[] = {
-    "%rax", "%rbx", "%rcx", "%rdx", "%rdi", "%rsi"
+static const char * const regs_i64[] = {
+    "%rax", "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9",
+    "%rbx", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
 };
-static const char * const regs_32[] = {
-    "%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi"
+
+static const char * const regs_i32[] = {
+    "%eax", "%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d",
+    "%ebx", "%r10d", "%r11d", "%r12d", "%r13d", "%r14d", "%r15d"
 };
-static const char * const regs_16[] = {
-    "%ax", "%bx", "%cx", "%dx", "%di", "%si"
+
+static const char * const regs_i16[] = {
+    "%ax", "%di", "%si", "%dx", "%cx", "%r8b", "%r9b",
+    "%bx", "%r10w", "%r11w", "%r12w", "%r13w", "%r14w", "%r15w"
 };
-static const char * const regs_8[] = {
-    "%al", "%bl", "%cl", "%dl", "%di", "%si"
+
+static const char * const regs_i8[] = {
+    "%al", "%dil", "%sil", "%dl", "%cl"
+    "%bl", "%r10b", "%r11b", "%r12b", "%r13b", "%r14b", "%r15b"
 };
 /* ------- */
 
 /* public */
-const size_t nregs_64 = sizeof(regs_64) / sizeof(*regs_64);
-const size_t nregs_32 = sizeof(regs_32) / sizeof(*regs_32);
-const size_t nregs_16 = sizeof(regs_16) / sizeof(*regs_16);
-const size_t nregs_8 = sizeof(regs_8) / sizeof(*regs_8);
+const size_t nregs_i64 = sizeof(regs_i64) / sizeof(*regs_i64);
+const size_t nregs_i32 = sizeof(regs_i32) / sizeof(*regs_i32);
+const size_t nregs_i16 = sizeof(regs_i16) / sizeof(*regs_i16);
+const size_t nregs_i8 = sizeof(regs_i8) / sizeof(*regs_i8);
+
+const size_t cg_end_args_regs_64 = 6;
+const size_t cg_end_args_regs_32 = 1;
+const size_t cg_end_args_regs_16 = 1;
+const size_t cg_end_args_regs_8 = 1;
 
 FILE *cg_out = NULL;
 
-void cg_push_64_literal(const char *literal) {
-    fprintf(cg_out, "\tpush\t$%s\n", literal);
+const size_t cg_args_regs_i64_end = 0;
+
+void cg_push_i64_literal(const char *literal) {
+    fprintf(cg_out, "\tpushq\t$%s\n", literal);
 }
 
-void cg_pop_64(int r) {
-    fprintf(cg_out, "\tpop \t%s\n", regs_64[r]);
+void cg_pop_i64(int r) {
+    fprintf(cg_out, "\tpopq\t%s\n", regs_i64[r]);
 }
 
-void cg_push_64(int r) {
-    fprintf(cg_out, "\tpush\t%s\n", regs_64[r]);
+void cg_push_i64(int r) {
+    fprintf(cg_out, "\tpushq\t%s\n", regs_i64[r]);
 }
 
-void cg_mov_64(int rdst, int rsrc) {
+void cg_mov_i64(int rdst, int rsrc) {
     if (rdst != rsrc) {
-        fprintf(cg_out, "\tmov \t%s, %s\n", regs_64[rsrc], regs_64[rdst]);
+        fprintf(cg_out, "\tmovq\t%s, %s\n", regs_i64[rsrc], regs_i64[rdst]);
     }
 }
 
-void cg_add_64(int rdst, int r1, int r2) {
-    cg_mov_64(rdst, r2);
-    fprintf(cg_out, "\taddq\t%s, %s\n", regs_64[r1], regs_64[rdst]);
+void cg_add_i64(int rdst, int r1, int r2) {
+    cg_mov_i64(rdst, r2);
+    fprintf(cg_out, "\taddq\t%s, %s\n", regs_i64[r1], regs_i64[rdst]);
 }
 
-void cg_sub_64(int rdst, int r1, int r2) {
-    cg_mov_64(rdst, r2);
-    fprintf(cg_out, "\tsubq\t%s, %s\n", regs_64[r1], regs_64[rdst]);
+void cg_sub_i64(int rdst, int r1, int r2) {
+    cg_mov_i64(rdst, r2);
+    fprintf(cg_out, "\tsubq\t%s, %s\n", regs_i64[r1], regs_i64[rdst]);
 }
 
-void cg_mul_64(int rdst, int r1, int r2) {
+void cg_mul_i64(int rdst, int r1, int r2) {
     if (rdst != 0) {
-        cg_push_64(0); /* x86_64 stores output of mul into rax */
+        cg_push_i64(0); /* xi86_i64 stores output of mul into rax */
     }
-    cg_mov_64(0, r2);
-    fprintf(cg_out, "\tmulq\t%s\n", regs_64[r1]);
+    cg_mov_i64(0, r2);
+    fprintf(cg_out, "\tmulq\t%s\n", regs_i64[r1]);
     if (rdst != 0) {
-        cg_mov_64(rdst, 0);
+        cg_mov_i64(rdst, 0);
     }
     if (rdst != 0) {
-        cg_pop_64(0);
+        cg_pop_i64(0);
     }
 }
 
-void cg_div_64(int rdst, int r1, int r2) {
+void cg_div_i64(int rdst, int r1, int r2) {
     UNUSED(rdst);
     UNUSED(r1);
     UNUSED(r2);
@@ -77,18 +91,18 @@ void cg_div_64(int rdst, int r1, int r2) {
 void cg_func_begin(const char *name) {
     const char * const fmt = \
         "\t.globl\t%s\n"
-	    "\t.type\t%s, @function\n"
+        "\t.type\t%s, @function\n"
         "%s:\n"
         "\t.cfi_startproc\n"
-        "\tpush\t%rbp\n"
-        "\tmov \t%rsp, %rbp\n"
+        "\tpushq\t%rbp\n"
+        "\tmovq\t%rsp, %rbp\n"
         ;
     fprintf(cg_out, fmt, name, name, name);
 }
 
 void cg_func_end(void) {
     const char * const inst = \
-        "\tpop \t%rax\n"
+        "\tpopq\t%rax\n"
         "\tleave\n"
         "\tret\n"
         "\t.cfi_endproc\n"
@@ -104,9 +118,9 @@ void cg_begin(FILE *out) {
         ;
     cg_out = out;
     fprintf(cg_out, "%s", preamble);
-    UNUSED(regs_16);
-    UNUSED(regs_32);
-    UNUSED(regs_8);
+    UNUSED(regs_i16);
+    UNUSED(regs_i32);
+    UNUSED(regs_i8);
 }
 
 void cg_end(void) {
@@ -114,8 +128,9 @@ void cg_end(void) {
         "_start:\n"
         "\tcall\tmain\n"
         "_end:\n"
-        "\tmovq	%rax, %rdi\n" /* rdi, status to pass to exit_group */
-        "\tcall\texit\n";
+        "\tmovq\t%rax, %rdi\n" /* rdi, status to pass to exit_group */
+        "\tcall\texit\n"
+        ;
     fprintf(cg_out, "%s\n", preamble);
 }
 /* ------ */
