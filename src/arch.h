@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 extern FILE *cg_out;
+
 extern const size_t nregs_64;
 extern const size_t nregs_32;
 extern const size_t nregs_16;

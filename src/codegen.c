@@ -48,10 +48,10 @@ static void cg_traverse(AST *ast) {
 
 void codegen(AST *ast, FILE *output) {
     cg_begin(output);
+    cg_func_begin("main");
     cg_traverse(ast);
 
-    /* TODO: remove this once `return` works */
-    cg_pop_64(0);
+    cg_func_end();
 
     cg_end();
 }

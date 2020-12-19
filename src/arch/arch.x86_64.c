@@ -75,21 +75,33 @@ void cg_div_64(int rdst, int r1, int r2) {
 }
 
 void cg_func_begin(const char *name) {
-    UNUSED(name);
+    const char * const fmt = \
+        "\t.globl\t%s\n"
+	    "\t.type\t%s, @function\n"
+        "%s:\n"
+        "\t.cfi_startproc\n"
+        "\tpush\t%rbp\n"
+        "\tmov \t%rsp, %rbp\n"
+        ;
+    fprintf(cg_out, fmt, name, name, name);
 }
 
 void cg_func_end(void) {
+    const char * const inst = \
+        "\tpop \t%rax\n"
+        "\tleave\n"
+        "\tret\n"
+        "\t.cfi_endproc\n"
+        ;
+    fprintf(cg_out, "%s", inst);
 }
 
 void cg_begin(FILE *out) {
     const char *preamble = \
         "\t.text\n"
-        "\t.globl	main\n"
-        "\t.globl	_start\n"
-        "\t.globl	_end\n"
-        "_start:\n"
-        "main:\n"
-        ".LFB0:\n";
+        "\t.globl\t_start\n"
+        "\t.globl\t_end\n"
+        ;
     cg_out = out;
     fprintf(cg_out, "%s", preamble);
     UNUSED(regs_16);
@@ -99,6 +111,8 @@ void cg_begin(FILE *out) {
 
 void cg_end(void) {
     const char *preamble = \
+        "_start:\n"
+        "\tcall\tmain\n"
         "_end:\n"
         "\tmovq	%rax, %rdi\n" /* rdi, status to pass to exit_group */
         "\tcall\texit\n";
