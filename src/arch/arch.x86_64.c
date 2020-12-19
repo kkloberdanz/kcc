@@ -15,12 +15,12 @@ static const char * const regs_i32[] = {
 };
 
 static const char * const regs_i16[] = {
-    "%ax", "%di", "%si", "%dx", "%cx", "%r8b", "%r9b",
+    "%ax", "%di", "%si", "%dx", "%cx", "%r8w", "%r9w",
     "%bx", "%r10w", "%r11w", "%r12w", "%r13w", "%r14w", "%r15w"
 };
 
 static const char * const regs_i8[] = {
-    "%al", "%dil", "%sil", "%dl", "%cl"
+    "%al", "%dil", "%sil", "%dl", "%cl", "%r8b", "%r9b",
     "%bl", "%r10b", "%r11b", "%r12b", "%r13b", "%r14b", "%r15b"
 };
 /* ------- */
@@ -32,9 +32,9 @@ const size_t nregs_i16 = sizeof(regs_i16) / sizeof(*regs_i16);
 const size_t nregs_i8 = sizeof(regs_i8) / sizeof(*regs_i8);
 
 const size_t cg_end_args_regs_64 = 6;
-const size_t cg_end_args_regs_32 = 1;
-const size_t cg_end_args_regs_16 = 1;
-const size_t cg_end_args_regs_8 = 1;
+const size_t cg_end_args_regs_32 = 6;
+const size_t cg_end_args_regs_16 = 6;
+const size_t cg_end_args_regs_8 = 6;
 
 FILE *cg_out = NULL;
 
