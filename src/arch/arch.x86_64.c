@@ -98,6 +98,13 @@ void cg_begin(FILE *out) {
 
 void cg_end(void) {
     const char *preamble = \
+        "jmp _end\n"
+        "_exit_fail:\n"
+        "\tmovq	$0x1, %rax\n"
+        "\tjmp _end\n"
+        "_exit_success:\n"
+        "\tmovq	$0x0, %rax\n"
+        "\tjmp _end\n"
         "_end:\n"
         "\tmovq	%rax, %rdi\n" /* rdi, status to pass to exit_group */
         "\tmovq	$0xe7, %rax\n" /* exit_group syscall */
