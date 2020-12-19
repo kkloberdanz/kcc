@@ -4,7 +4,6 @@ LFLAGS=
 SRC=$(wildcard src/*.c)
 OBJ=$(patsubst src/%.c,obj/%.o,$(SRC))
 INC=$(wildcard src/*.h)
-EXTERN_INC=$(wildcard include/*.h)
 
 .PHONY: release
 release: kcc
@@ -25,7 +24,7 @@ warn-everything: CC=clang -Weverything -Werror -Wno-padded -Wno-switch-enum
 kcc: $(OBJ) Makefile
 	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
 
-obj/%.o: src/%.c $(INC) $(EXTERN_INC) Makefile
+obj/%.o: src/%.c $(INC) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 .PHONY: clean
