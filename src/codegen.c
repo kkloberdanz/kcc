@@ -10,13 +10,13 @@ static void binop(AST *ast) {
     cg_pop_64(0);
     switch (ast->op) {
         case OP_ADD:
-            cg_add_64(0, 1, 0);
-            cg_push_64(0);
+            cg_add_64(2, 1, 0);
+            cg_push_64(2);
             break;
 
         case OP_MINUS:
-            cg_sub_64(0, 1, 0);
-            cg_push_64(0);
+            cg_sub_64(2, 1, 0);
+            cg_push_64(2);
             break;
 
         case OP_DIV:
@@ -24,8 +24,8 @@ static void binop(AST *ast) {
             break;
 
         case OP_MUL:
-            cg_mul_64(0, 1, 0);
-            cg_push_64(0);
+            cg_mul_64(2, 1, 0);
+            cg_push_64(2);
             break;
 
         case OP_NOP:
@@ -49,5 +49,9 @@ static void cg_traverse(AST *ast) {
 void codegen(AST *ast, FILE *output) {
     cg_begin(output);
     cg_traverse(ast);
+
+    /* TODO: remove this once `return` works */
+    cg_pop_64(0);
+
     cg_end();
 }

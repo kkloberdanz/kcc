@@ -6,6 +6,7 @@
 extern FILE *cg_out;
 extern const size_t nregs_64;
 extern const size_t nregs_32;
+extern const size_t nregs_16;
 extern const size_t nregs_8;
 
 void cg_push_64_literal(const char *literal);
