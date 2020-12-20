@@ -201,6 +201,7 @@ TokList *lex(FILE *infile) {
     size_t lineno = 1;
     TokList *curr = NULL;
     TokList *head = NULL;
+    Token tok;
     int a, b, c; /* throw away the 3 trailing ints from the cpp output */
 
     if (!infile) {
@@ -223,6 +224,9 @@ TokList *lex(FILE *infile) {
         }
         lineno++;
     }
+    tok_init(&tok, lineno, 0, "EOF", TOK_EOF); \
+
+    curr = toklist_push(curr, toklist_new(tok));
     free(line);
 
     return head;

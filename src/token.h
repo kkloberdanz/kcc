@@ -36,6 +36,7 @@
 */
 
 typedef enum TokenKind {
+    TOK_EOF,
     TOK_ID,
     TOK_INTEGER,
     TOK_FLOAT,

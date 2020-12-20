@@ -58,6 +58,8 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_STRING";
         case TOK_DOT:
             return "TOK_DOT";
+        case TOK_EOF:
+            return "TOK_EOF";
         case TOK_ID:
             return "TOK_ID";
         case TOK_INTEGER:

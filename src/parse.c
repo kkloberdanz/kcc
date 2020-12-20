@@ -27,12 +27,11 @@ static OpKind binop(void) {
     /* TODO: operator precedence is not yet implemented
      * order of operations is not yet being respected
      */
-    Token t;
-    if (!tokens) {
-        syntax_error("out of tokens", 0, 0);
+    Token t = tokens->tok;
+    if (t.kind == TOK_EOF) {
+        syntax_error("unexpected end of file", t.lineno, t.col);
         exit(1);
     }
-    t = tokens->tok;
     switch (t.kind) {
         case TOK_PLUS:
             match(TOK_PLUS);
@@ -52,11 +51,36 @@ static OpKind binop(void) {
     }
 }
 
+static int op_precedence(Token tok) {
+    switch (tok.kind) {
+        case TOK_PLUS:
+        case TOK_MINUS:
+            return 10;
+
+        case TOK_SLASH:
+        case TOK_STAR:
+            return 20;
+
+        case TOK_INTEGER:
+        case TOK_EOF:
+        case TOK_FLOAT:
+            return 0;
+
+        default: {
+            char msg[100];
+            sprintf(msg, "unexpected token: %s", tok.repr);
+            syntax_error(msg, tok.lineno, tok.col);
+            exit(1);
+        }
+    }
+}
+
 static AST *expr(void) {
     AST *ast = NULL;
     AST *left = NULL;
     OpKind op = OP_NOP;
     Token t = tokens->tok;
+    UNUSED(op_precedence);
     switch (t.kind) {
         case TOK_INTEGER:
             left = ast_int(tokens->tok.repr);
@@ -95,7 +119,7 @@ AST *parse(TokList *tks) {
 
     tokens = tks;
     ast = statement();
-    if (tokens) {
+    if (!(tokens->tok.kind == TOK_EOF)) {
         syntax_error("unconsumed tokens", tokens->tok.lineno, tokens->tok.col);
     }
     return ast;
