@@ -38,8 +38,6 @@ const size_t cg_end_args_regs_8 = 6;
 
 FILE *cg_out = NULL;
 
-const size_t cg_args_regs_i64_end = 0;
-
 void cg_push_i64_literal(const char *literal) {
     fprintf(cg_out, "\tpushq\t$%s\n", literal);
 }
@@ -94,8 +92,8 @@ void cg_func_begin(const char *name) {
         "\t.type\t%s, @function\n"
         "%s:\n"
         "\t.cfi_startproc\n"
-        "\tpushq\t%rbp\n"
-        "\tmovq\t%rsp, %rbp\n"
+        "\tpushq\t%%rbp\n"
+        "\tmovq\t%%rsp, %%rbp\n"
         ;
     fprintf(cg_out, fmt, name, name, name);
 }
