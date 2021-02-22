@@ -100,6 +100,7 @@ int main(int argc, char **argv) {
 
     /* Lexical analysis */
     tokens = lex(cpp_stream);
+    toklist_print(tokens);
     cpp_err = pclose(cpp_stream);
     cpp_stream = NULL;
     if (cpp_err) {

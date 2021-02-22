@@ -213,16 +213,18 @@ void tok_print(struct Token *tok) {
 }
 
 void toklist_print(TokList *head) {
-    printf("[");
+    printf("[\n");
     if (head) {
         while (head->next) {
+            printf("\t");
             tok_print(&head->tok);
-            printf(", ");
+            printf(",\n");
             head = head->next;
         }
+        printf("\t");
         tok_print(&head->tok);
     }
-    puts("]");
+    puts("\n]");
 }
 
 void tok_init(
