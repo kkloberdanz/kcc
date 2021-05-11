@@ -21,8 +21,14 @@ sanitize: OPT:=-O0 -ggdb3 -fsanitize=address
 warn-everything: kcc
 warn-everything: CC=clang -Weverything -Werror -Wno-padded -Wno-switch-enum
 
-kcc: $(OBJ) Makefile
-	$(CC) -o kcc $(CFLAGS) $(OBJ) $(LFLAGS)
+kcc: $(OBJ) Makefile y.tab.o
+	$(CC) -o kcc $(CFLAGS) $(OBJ) y.tab.o $(LFLAGS)
+
+y.tab.c: src/grammar.y $(INC)
+	yacc -o y.tab.c src/grammar.y
+
+y.tab.o: y.tab.c
+	$(CC) -c -o y.tab.o $(CFLAGS) y.tab.c
 
 obj/%.o: src/%.c $(INC) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<

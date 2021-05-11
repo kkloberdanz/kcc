@@ -32,7 +32,7 @@
     } while (0)
 
 
-#define NEXT_CHAR() current_tok[idx + 1]
+#define NEXT_CHAR() line[col] ? line[++col] : '\0'
 
 static TokList *parse_line(const char *line, const size_t lineno) {
     TokList *curr = NULL;

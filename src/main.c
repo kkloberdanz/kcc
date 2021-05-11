@@ -4,8 +4,9 @@
 
 #include "util.h"
 #include "lex.h"
-#include "parse.h"
 #include "codegen.h"
+
+AST *parse(TokList *tokens);
 
 struct Options {
     char dont_link;

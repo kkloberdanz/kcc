@@ -4,3 +4,4 @@ kcc
 a.out
 core
 src/arch.c
+y.tab.c

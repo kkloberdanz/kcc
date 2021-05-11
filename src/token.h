@@ -38,7 +38,9 @@
 typedef enum TokenKind {
     TOK_EOF,
     TOK_ID,
-    TOK_INTEGER,
+    TOK_INT,
+    TOK_INT_LIT,
+    TOK_FLOAT_LIT,
     TOK_FLOAT,
     TOK_ASSIGN,
     TOK_EQ,
@@ -57,7 +59,6 @@ typedef enum TokenKind {
     TOK_STAR,
     TOK_OVER,
     TOK_PERCENT,
-    TOK_CARROT,
     TOK_LBRACE,
     TOK_RBRACE,
     TOK_LBRACK,
@@ -107,7 +108,8 @@ typedef enum TokenKind {
     TOK_VOID,
     TOK_VOLATILE,
     TOK_WHILE,
-    TOK_AMPERSAND
+    TOK_AMPERSAND,
+    TOK_QUESTION
 } TokenKind;
 
 typedef struct Token {

@@ -62,8 +62,12 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_EOF";
         case TOK_ID:
             return "TOK_ID";
-        case TOK_INTEGER:
-            return "TOK_INTEGER";
+        case TOK_INT:
+            return "TOK_INT";
+        case TOK_INT_LIT:
+            return "TOK_INT_LIT";
+        case TOK_FLOAT_LIT:
+            return "TOK_FLOAT_LIT";
         case TOK_FLOAT:
             return "TOK_FLOAT";
         case TOK_ASSIGN:
@@ -100,8 +104,6 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_OVER";
         case TOK_PERCENT:
             return "TOK_PERCENT";
-        case TOK_CARROT:
-            return "TOK_CARROT";
         case TOK_LBRACE:
             return "TOK_LBRACE";
         case TOK_RBRACE:
@@ -144,6 +146,8 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_LEFT_SHIFT";
         case TOK_AMPERSAND:
             return "TOK_AMPERSAND";
+        case TOK_QUESTION:
+            return "TOK_QUESTION";
         case TOK_BREAK:
             return "TOK_BREAK";
         case TOK_CHAR:
@@ -260,11 +264,11 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
         case '9': {
             size_t i;
             size_t n_dots = 0;
-            TokenKind kind = TOK_INTEGER;
+            TokenKind kind = TOK_INT_LIT;
             for (i = 0; tok[i] != '\0'; i++) {
                 char c = tok[i];
                 if (c == '.') {
-                    kind = TOK_FLOAT;
+                    kind = TOK_FLOAT_LIT;
                     n_dots++;
                 } else {
                     if (!isdigit(c)) {
@@ -382,6 +386,9 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
         case '&':
             return TOK_AMPERSAND;
 
+        case '?':
+            return TOK_QUESTION;
+
         case ';':
             return TOK_SEMICOLON;
 
@@ -469,6 +476,12 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
             }
             if (strcmp(tok, "register") == 0) {
                 return TOK_REGISTER;
+            }
+            if (strcmp(tok, "float") == 0) {
+                return TOK_FLOAT;
+            }
+            if (strcmp(tok, "int") == 0) {
+                return TOK_INT;
             }
             if (strcmp(tok, "return") == 0) {
                 return TOK_RETURN;
