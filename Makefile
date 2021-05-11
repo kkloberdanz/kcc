@@ -39,3 +39,4 @@ clean:
 	rm -f kcc
 	rm -f core
 	rm -f src/arch.c
+	rm -f y.tab.*
