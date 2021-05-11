@@ -54,8 +54,12 @@ const char *kind_repr(TokenKind kind) {
    ...:     print(msg)
      */
     switch (kind) {
+        case TOK_ARROW:
+            return "TOK_ARROW";
         case TOK_STRING:
             return "TOK_STRING";
+        case TOK_CHAR_LIT:
+            return "TOK_CHAR_LIT";
         case TOK_DOT:
             return "TOK_DOT";
         case TOK_EOF:
@@ -162,6 +166,8 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_DO";
         case TOK_DOUBLE:
             return "TOK_DOUBLE";
+        case TOK_BUILTIN_VA_LIST:
+            return "TOK_BUILTIN_VA_LIST";
         case TOK_ENUM:
             return "TOK_ENUM";
         case TOK_EXTERN:
@@ -344,6 +350,9 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
         case '"':
             return TOK_STRING;
 
+        case '\'':
+            return TOK_CHAR_LIT;
+
         case '<':
             switch (tok[1]) {
                 case '<':
@@ -376,6 +385,8 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
                     return TOK_MINUS_ASSIGN;
                 case '-':
                     return TOK_DEC;
+                case '>':
+                    return TOK_ARROW;
                 case '\0':
                     return TOK_MINUS;
                 default:
@@ -449,6 +460,9 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
             }
             if (strcmp(tok, "double") == 0) {
                 return TOK_DOUBLE;
+            }
+            if (strcmp(tok, "__builtin_va_list") == 0) {
+                return TOK_BUILTIN_VA_LIST;
             }
             if (strcmp(tok, "else") == 0) {
                 return TOK_ELSE;

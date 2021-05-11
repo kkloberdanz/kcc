@@ -60,6 +60,27 @@ static TokList *parse_line(const char *line, const size_t lineno) {
                 in_string = !in_string;
                 break;
 
+            case '\'':
+                PUSH_TOKEN();
+                PUSH_CHAR(ch);
+                next = NEXT_CHAR();
+                PUSH_CHAR(next);
+                if (next == '\\') {
+                    next = NEXT_CHAR();
+                    PUSH_CHAR(next);
+                }
+                next = NEXT_CHAR();
+                if (next != '\'') {
+                    syntax_error(
+                        "char literal must only be a single char",
+                        lineno,
+                        col
+                    );
+                }
+                PUSH_CHAR(next);
+                PUSH_TOKEN();
+                break;
+
             case ' ':
             case '\r':
             case '\t':
@@ -167,7 +188,6 @@ static TokList *parse_line(const char *line, const size_t lineno) {
             case '(':
             case ')':
             case ';':
-            case '\'':
             case '%':
             case '.':
             case '^':

@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
     parse_options(argc, argv, &options);
 
-    sprintf(cpp_cmd, "/usr/bin/cpp -std=c90 %s", options.infile);
+    sprintf(cpp_cmd, "/usr/bin/cpp -D__STDC__ -std=c90 %s", options.infile);
 
     /* Invoke cpp for preprocesser */
     cpp_stream = popen(cpp_cmd, "r");

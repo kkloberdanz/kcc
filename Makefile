@@ -28,7 +28,8 @@ y.tab.c: src/grammar.y $(INC)
 	yacc -o y.tab.c src/grammar.y
 
 y.tab.o: y.tab.c
-	$(CC) -c -o y.tab.o $(CFLAGS) y.tab.c
+	$(CC) -c -o y.tab.o $(CFLAGS) y.tab.c \
+		-Wno-unused-macros -Wno-missing-variable-declarations
 
 obj/%.o: src/%.c $(INC) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<

@@ -21,12 +21,13 @@
 
 #define YYERROR_VERBOSE
 
-static int yylex();
-void yyerror(const char *msg);
+static int yylex(void);
+static void yyerror(const char *msg);
 
-TokList *tokens = NULL;
-TokList *current_token = NULL;
+static TokList *tokens = NULL;
+static TokList *current_token = NULL;
 static AST *tree = NULL;
+AST *parse(TokList *toks);
 %}
 
 %define parse.error verbose
@@ -43,6 +44,8 @@ static AST *tree = NULL;
 %token STRUCT UNION ENUM ELLIPSIS
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+
+%token BUILTIN_VA_LIST
 
 %start translation_unit
 %%
@@ -224,6 +227,7 @@ type_specifier
     | LONG
     | FLOAT
     | DOUBLE
+    | BUILTIN_VA_LIST
     | SIGNED
     | UNSIGNED
     | struct_or_union_specifier
@@ -468,6 +472,9 @@ static int translate_tok(TokenKind t) {
         case TOK_EOF:
             return 0;
 
+        case TOK_ARROW:
+            return PTR_OP;
+
         case TOK_ID:
             return IDENTIFIER;
 
@@ -483,6 +490,7 @@ static int translate_tok(TokenKind t) {
         case TOK_INT_LIT:
         case TOK_FLOAT_LIT:
         case TOK_STRING:
+        case TOK_CHAR_LIT:
             return CONSTANT;
 
         case TOK_QUESTION:
@@ -671,6 +679,9 @@ static int translate_tok(TokenKind t) {
         case TOK_UNSIGNED:
             return UNSIGNED;
 
+        case TOK_BUILTIN_VA_LIST:
+            return BUILTIN_VA_LIST;
+
         case TOK_VOID:
             return VOID;
 
@@ -697,13 +708,20 @@ static int yylex(void) {
     current_token = tokens;
     tokens = tokens->next;
     tok = translate_tok(current_token->tok.kind);
+    fprintf(
+        stderr,
+        "(%4lu, %3lu) tok: %s\n",
+        current_token->tok.lineno,
+        current_token->tok.col,
+        current_token->tok.repr
+    );
     if (tok < 0) {
-        exit(45);
+        exit(2);
     }
     return tok;
 }
 
-void yyerror(const char *msg) {
+static void yyerror(const char *msg) {
     fprintf(
         stderr,
         "\n(line: %lu col: %lu) -- %s\n",
