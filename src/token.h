@@ -105,6 +105,7 @@ typedef enum TokenKind {
     TOK_LONG,
     TOK_STATIC,
     TOK_STRUCT,
+    TOK_UNION,
     TOK_SWITCH,
     TOK_TYPEDEF,
     TOK_UNSIGNED,

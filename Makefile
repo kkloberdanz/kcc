@@ -6,8 +6,13 @@ OBJ=$(patsubst src/%.c,obj/%.o,$(SRC))
 INC=$(wildcard src/*.h)
 
 .PHONY: release
-release: kcc
 release: OPT:=-Os -s -flto -fvisibility=hidden
+release: kcc
+
+.PHONY: static
+static: OPT:=-Os -s -flto -fvisibility=hidden -static
+static: CC:=musl-gcc
+static: kcc
 
 .PHONY: debug
 debug: kcc

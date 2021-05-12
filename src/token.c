@@ -194,6 +194,8 @@ const char *kind_repr(TokenKind kind) {
             return "TOK_REGISTER";
         case TOK_STRUCT:
             return "TOK_STRUCT";
+        case TOK_UNION:
+            return "TOK_UNION";
         case TOK_SWITCH:
             return "TOK_SWITCH";
         case TOK_TYPEDEF:
@@ -515,6 +517,9 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
             if (strcmp(tok, "struct") == 0) {
                 return TOK_STRUCT;
             }
+            if (strcmp(tok, "union") == 0) {
+                return TOK_UNION;
+            }
             if (strcmp(tok, "switch") == 0) {
                 return TOK_SWITCH;
             }
@@ -522,7 +527,7 @@ TokenKind token_to_kind(const char *tok, size_t lineno, size_t col) {
                 return TOK_TYPEDEF;
             }
             if (strcmp(tok, "union") == 0) {
-                return TOK_TYPEDEF;
+                return TOK_UNION;
             }
             if (strcmp(tok, "unsigned") == 0) {
                 return TOK_UNSIGNED;

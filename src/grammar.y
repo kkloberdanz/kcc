@@ -31,6 +31,8 @@ static TokList *current_token = NULL;
 static AST *tree = NULL;
 AST *parse(FILE *infile);
 char *strdup(const char *s);
+static void add_type(void);
+
 %}
 
 %define parse.error verbose
@@ -199,58 +201,37 @@ declaration
 declaration_specifiers
     : storage_class_specifier
         {
-            printf("storage: %s\n", current_token->tok.repr);
+            fprintf(stderr, "storage: %s\n", current_token->tok.repr);
+            add_type();
         }
 
     | storage_class_specifier declaration_specifiers
         {
-            printf("storage decl: %s\n", current_token->tok.repr);
+            fprintf(stderr, "storage decl: %s\n", current_token->tok.repr);
+            add_type();
         }
 
     | type_specifier
         {
-            printf("type spec: %s\n", current_token->tok.repr);
+            fprintf(stderr, "type spec: %s\n", current_token->tok.repr);
         }
 
     | type_specifier declaration_specifiers
         {
-            ENTRY e;
-            char type_alias[2048] = {0};
-            char buf[2048] = {0};
-            TokList *curr = NULL;
-            char start_recording = 0;
-
-            e.key = current_token->tok.repr;
-            if (!hsearch(e, FIND)) {
-                for (curr = tokens; curr != NULL; curr = curr->next) {
-                    if (curr->tok.kind == TOK_TYPEDEF) {
-                        start_recording = 1;
-                        continue;
-                    } else if (curr->tok.kind == TOK_ID) {
-                        break;
-                    }
-
-                    if (start_recording) {
-                        sprintf(type_alias, "%s %s", buf, curr->tok.repr);
-                        strcpy(buf, type_alias);
-                    }
-                }
-                e.key = strdup(current_token->tok.repr);
-                e.data = strdup(type_alias);
-                hsearch(e, ENTER);
-                printf("adding type: %s -> %s\n", e.key, (char *)e.data);
-            }
-            printf("type spec delc: %s\n", current_token->tok.repr);
+            fprintf(stderr, "type spec delc: %s\n", current_token->tok.repr);
+            add_type();
         }
 
     | type_qualifier
         {
-            printf("type qual: %s\n", current_token->tok.repr);
+            fprintf(stderr, "type qual: %s\n", current_token->tok.repr);
+            add_type();
         }
 
     | type_qualifier declaration_specifiers
         {
-            printf("type qual decl: %s\n", current_token->tok.repr);
+            fprintf(stderr, "type qual decl: %s\n", current_token->tok.repr);
+            add_type();
         }
     ;
 
@@ -507,6 +488,41 @@ function_definition
 
 %%
 
+static void add_type(void) {
+    ENTRY e;
+    char type_alias[2048] = {0};
+    char buf[2048] = {0};
+    TokList *curr = NULL;
+    char start_recording = 0;
+
+    e.key = current_token->tok.repr;
+    if (!hsearch(e, FIND)) {
+        for (curr = tokens; curr != NULL; curr = curr->next) {
+            if (curr->tok.kind == TOK_TYPEDEF) {
+                start_recording = 1;
+                continue;
+            } else if (curr->tok.kind == TOK_ID) {
+                break;
+            }
+
+            if (start_recording) {
+                sprintf(type_alias, "%s %s", buf, curr->tok.repr);
+                strcpy(buf, type_alias);
+            }
+        }
+        e.key = strdup(current_token->tok.repr);
+        e.data = strdup(type_alias);
+        hsearch(e, ENTER);
+        fprintf(
+            stderr,
+            "%sadding type: %s -> %s\n",
+            lex_current_line(),
+            e.key,
+            (char *)e.data
+        );
+    }
+}
+
 static int translate_tok(TokenKind t) {
     ENTRY *search = NULL;
     ENTRY entry;
@@ -719,6 +735,9 @@ static int translate_tok(TokenKind t) {
 
         case TOK_STRUCT:
             return STRUCT;
+
+        case TOK_UNION:
+            return UNION;
 
         case TOK_SWITCH:
             return SWITCH;
