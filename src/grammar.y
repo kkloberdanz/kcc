@@ -727,7 +727,7 @@ static void yyerror(const char *msg) {
         current_token->tok.repr,
         lex_current_line()
     );
-    for (i = 0; i < current_token->tok.col; i++) {
+    for (i = 0; i < current_token->tok.col + 1; i++) {
         fprintf(stderr, " ");
     }
 
@@ -735,8 +735,7 @@ static void yyerror(const char *msg) {
     for (i = 0; current_token->tok.repr[i]; i++) {
         fprintf(stderr, "~");
     }
-    fprintf(stderr, "~\n");
-    fprintf(stderr, "\033[0m");
+    fprintf(stderr, "\033[0m\n");
 }
 
 AST *parse(FILE *infile) {
