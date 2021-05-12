@@ -6,7 +6,7 @@
 #include "lex.h"
 #include "codegen.h"
 
-AST *parse(TokList *tokens);
+AST *parse(FILE *infile);
 
 struct Options {
     char dont_link;
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
     parse_options(argc, argv, &options);
 
-    sprintf(cpp_cmd, "/usr/bin/cpp -D__STDC__ -std=c90 %s", options.infile);
+    sprintf(cpp_cmd, "/usr/bin/cpp -std=c90 %s", options.infile);
 
     /* Invoke cpp for preprocesser */
     cpp_stream = popen(cpp_cmd, "r");
@@ -99,28 +99,20 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    /* Lexical analysis */
-    tokens = lex(cpp_stream);
-    toklist_print(tokens);
+    /* Lexical analysis is called by the yacc parser */
+
+    /* Parse tokens to build Abstract Syntax Tree (AST) */
+    ast = parse(cpp_stream);
+    if (!ast) {
+        goto cleanup;
+    }
+
     cpp_err = pclose(cpp_stream);
     cpp_stream = NULL;
     if (cpp_err) {
         err_msg("failed to preprocess\n");
         goto cleanup;
     }
-
-    if (!tokens) {
-        err_msg("failed to get tokens\n");
-        goto cleanup;
-    }
-
-    /* Parse tokens to build Abstract Syntax Tree (AST) */
-    ast = parse(tokens);
-    if (!ast) {
-        goto cleanup;
-    }
-    toklist_free(tokens);
-    tokens = NULL;
 
     /* Transform AST into assembly */
     output = fopen(options.outfile, "w");

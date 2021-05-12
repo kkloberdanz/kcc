@@ -214,42 +214,55 @@ exit:
 #undef PUSH_CHAR
 #undef NEXT_CHAR
 
-TokList *lex(FILE *infile) {
-    char src_file[TOK_SIZE];
-    char *line = NULL;
+static FILE *infile = NULL;
+static char *line = NULL;
+static char src_file[2048] = {0};
+size_t lineno = 1;
+
+void lex_set_file(FILE *fp) {
+    infile = fp;
+}
+
+char *lex_current_line(void) {
+    return line;
+}
+
+char *lex_current_filename(void) {
+    return src_file;
+}
+
+TokList *lex(void) {
     size_t n = 0;
-    size_t lineno = 1;
-    TokList *curr = NULL;
-    TokList *head = NULL;
     Token tok;
+    TokList *token_list = NULL;
     int a, b, c; /* throw away the 3 trailing ints from the cpp output */
 
     if (!infile) {
-        return NULL;
+        fprintf(
+            stderr,
+            "%s\n",
+            "must first set file using lex_set_file before calling lex"
+        );
+        exit(3);
     }
+
+    free(line);
+    line = NULL;
 
     while ((getline(&line, &n, infile)) > 0) {
-        TokList *ll = NULL;
         if (*line == '#') {
-            sscanf(line, "# %zu %s %d %d %d", &lineno, src_file, &a, &b, &c);
+            sscanf(line, "# %zu \"%s %d %d %d", &lineno, src_file, &a, &b, &c);
+            src_file[strlen(src_file) - 1] = 0;
             continue;
         }
-        ll = parse_line(line, lineno);
-
-        if (ll) {
-            curr = toklist_push(curr, ll);
-            if (!head) {
-                head = curr;
-            }
-        }
+        token_list = parse_line(line, lineno);
         lineno++;
+        if (token_list) {
+            return token_list;
+        }
     }
-    tok_init(&tok, lineno, 0, "EOF", TOK_EOF); \
-
-    curr = toklist_push(curr, toklist_new(tok));
-    free(line);
-
-    return head;
+    tok_init(&tok, lineno, 0, "EOF", TOK_EOF);
+    return toklist_new(tok);
 }
 
 #undef TOK_SIZE

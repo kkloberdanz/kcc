@@ -27,7 +27,7 @@ static void yyerror(const char *msg);
 static TokList *tokens = NULL;
 static TokList *current_token = NULL;
 static AST *tree = NULL;
-AST *parse(TokList *toks);
+AST *parse(FILE *infile);
 %}
 
 %define parse.error verbose
@@ -192,6 +192,7 @@ declaration
     | declaration_specifiers init_declarator_list ';'
     ;
 
+/* TODO: add the type specifier to the types table */
 declaration_specifiers
     : storage_class_specifier
     | storage_class_specifier declaration_specifiers
@@ -455,19 +456,6 @@ function_definition
 %%
 
 static int translate_tok(TokenKind t) {
-/*
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
-%token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
-%token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
-%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME
-
-%token TYPEDEF EXTERN STATIC AUTO REGISTER
-%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
-%token STRUCT UNION ENUM ELLIPSIS
-
-%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-*/
     switch (t) {
         case TOK_EOF:
             return 0;
@@ -701,38 +689,58 @@ static int yylex(void) {
     int tok;
 
     if (!tokens) {
-        fprintf(stderr, "call lex before yylex\n");
-        exit(EXIT_FAILURE);
+        tokens = lex();
+        current_token = tokens;
+    } else if (current_token->next) {
+        current_token = current_token->next;
+    } else {
+        toklist_free(tokens);
+        tokens = lex();
+        current_token = tokens;
     }
 
-    current_token = tokens;
-    tokens = tokens->next;
     tok = translate_tok(current_token->tok.kind);
-    fprintf(
-        stderr,
-        "(%4lu, %3lu) tok: %s\n",
-        current_token->tok.lineno,
-        current_token->tok.col,
-        current_token->tok.repr
-    );
     if (tok < 0) {
+        fprintf(
+            stderr,
+            "(%4lu, %3lu) invalid token: %s\n",
+            current_token->tok.lineno,
+            current_token->tok.col,
+            current_token->tok.repr
+        );
         exit(2);
     }
     return tok;
 }
 
 static void yyerror(const char *msg) {
+    size_t i = 0;
     fprintf(
         stderr,
-        "\n(line: %lu col: %lu) -- %s\n",
+        "\n\033[35m%s\033[0m: "
+        "(line: \033[92m%lu\033[0m col: \033[92m%lu\033[0m)\n%s: '%s'\n"
+        "> %s",
+        lex_current_filename(),
         current_token->tok.lineno,
         current_token->tok.col,
-        msg
+        msg,
+        current_token->tok.repr,
+        lex_current_line()
     );
+    for (i = 0; i < current_token->tok.col; i++) {
+        fprintf(stderr, " ");
+    }
+
+    fprintf(stderr, "\033[91m");
+    for (i = 0; current_token->tok.repr[i]; i++) {
+        fprintf(stderr, "~");
+    }
+    fprintf(stderr, "~\n");
+    fprintf(stderr, "\033[0m");
 }
 
-AST *parse(TokList *toks) {
-    tokens = toks;
+AST *parse(FILE *infile) {
+    lex_set_file(infile);
     yyparse();
     return tree;
 }
