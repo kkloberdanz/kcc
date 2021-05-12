@@ -15,6 +15,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <search.h>
+#include <string.h>
 
 #include "src/lex.h"
 #include "src/ast.h"
@@ -28,6 +30,7 @@ static TokList *tokens = NULL;
 static TokList *current_token = NULL;
 static AST *tree = NULL;
 AST *parse(FILE *infile);
+char *strdup(const char *s);
 %}
 
 %define parse.error verbose
@@ -195,11 +198,60 @@ declaration
 /* TODO: add the type specifier to the types table */
 declaration_specifiers
     : storage_class_specifier
+        {
+            printf("storage: %s\n", current_token->tok.repr);
+        }
+
     | storage_class_specifier declaration_specifiers
+        {
+            printf("storage decl: %s\n", current_token->tok.repr);
+        }
+
     | type_specifier
+        {
+            printf("type spec: %s\n", current_token->tok.repr);
+        }
+
     | type_specifier declaration_specifiers
+        {
+            ENTRY e;
+            char type_alias[2048] = {0};
+            char buf[2048] = {0};
+            TokList *curr = NULL;
+            char start_recording = 0;
+
+            e.key = current_token->tok.repr;
+            if (!hsearch(e, FIND)) {
+                for (curr = tokens; curr != NULL; curr = curr->next) {
+                    if (curr->tok.kind == TOK_TYPEDEF) {
+                        start_recording = 1;
+                        continue;
+                    } else if (curr->tok.kind == TOK_ID) {
+                        break;
+                    }
+
+                    if (start_recording) {
+                        sprintf(type_alias, "%s %s", buf, curr->tok.repr);
+                        strcpy(buf, type_alias);
+                    }
+                }
+                e.key = strdup(current_token->tok.repr);
+                e.data = strdup(type_alias);
+                hsearch(e, ENTER);
+                printf("adding type: %s -> %s\n", e.key, (char *)e.data);
+            }
+            printf("type spec delc: %s\n", current_token->tok.repr);
+        }
+
     | type_qualifier
+        {
+            printf("type qual: %s\n", current_token->tok.repr);
+        }
+
     | type_qualifier declaration_specifiers
+        {
+            printf("type qual decl: %s\n", current_token->tok.repr);
+        }
     ;
 
 init_declarator_list
@@ -456,6 +508,16 @@ function_definition
 %%
 
 static int translate_tok(TokenKind t) {
+    ENTRY *search = NULL;
+    ENTRY entry;
+
+    entry.key = strdup(current_token->tok.repr);
+    search = hsearch(entry, FIND);
+    if (search) {
+        fprintf(stderr, "found: '%s'\n", search->key);
+        return TYPE_NAME;
+    }
+
     switch (t) {
         case TOK_EOF:
             return 0;
@@ -703,7 +765,7 @@ static int yylex(void) {
     if (tok < 0) {
         fprintf(
             stderr,
-            "(%4lu, %3lu) invalid token: %s\n",
+            "(%4lu, %3lu) invalid token: '%s'\n",
             current_token->tok.lineno,
             current_token->tok.col,
             current_token->tok.repr
@@ -715,6 +777,8 @@ static int yylex(void) {
 
 static void yyerror(const char *msg) {
     size_t i = 0;
+
+    fflush(stdout);
     fprintf(
         stderr,
         "\n\033[35m%s\033[0m: "
@@ -727,6 +791,7 @@ static void yyerror(const char *msg) {
         current_token->tok.repr,
         lex_current_line()
     );
+
     for (i = 0; i < current_token->tok.col + 1; i++) {
         fprintf(stderr, " ");
     }
@@ -740,6 +805,11 @@ static void yyerror(const char *msg) {
 
 AST *parse(FILE *infile) {
     lex_set_file(infile);
+    if (!hcreate(10000)) {
+        fprintf(stderr, "failed to initialize htable\n");
+        exit(4);
+    }
     yyparse();
+    hdestroy();
     return tree;
 }
