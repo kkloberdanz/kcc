@@ -16,7 +16,7 @@ static: kcc
 
 .PHONY: debug
 debug: kcc
-debug: OPT:=-O0 -ggdb3
+debug: OPT:=-O0 -ggdb3 -DDEBUG
 
 .PHONY: sanitize
 sanitize: kcc

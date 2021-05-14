@@ -14,7 +14,7 @@ static void binop(AST *ast) {
             cg_push_i64(0);
             break;
 
-        case OP_MINUS:
+        case OP_SUB:
             cg_sub_i64(0, 1, 0);
             cg_push_i64(0);
             break;
@@ -26,6 +26,10 @@ static void binop(AST *ast) {
         case OP_MUL:
             cg_mul_i64(0, 1, 0);
             cg_push_i64(0);
+            break;
+
+        case OP_MOD:
+            /* TODO */
             break;
 
         case OP_NOP:
