@@ -1150,9 +1150,11 @@ static int translate_tok(TokenKind t) {
 
         case TOK_INT_LIT:
         case TOK_FLOAT_LIT:
-        case TOK_STRING:
         case TOK_CHAR_LIT:
             return CONSTANT;
+
+        case TOK_STRING:
+            return STRING_LITERAL;
 
         case TOK_QUESTION:
             return '?';
