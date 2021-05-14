@@ -16,6 +16,7 @@ static void *ast_malloc(size_t sz) {
     ast->repr = NULL;
     ast->type = TYPE_NONE;
     ast->op = OP_NOP;
+    ast->kind = AST_UNASSIGNED;
     return ast;
 }
 
@@ -77,6 +78,15 @@ AST *ast_type_specifier(Type type) {
     AST *ast = ast_malloc(sizeof(*ast));
     if (ast) {
         ast->type = type;
+    }
+    return ast;
+}
+
+AST *ast_identifier_decl(char *id) {
+    AST *ast = ast_malloc(sizeof(*ast));
+    if (ast) {
+        ast->repr = id;
+        ast->kind = AST_ID;
     }
     return ast;
 }

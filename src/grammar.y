@@ -65,7 +65,6 @@ primary_expression
         }
     | CONSTANT
         {
-            debug_display("CONSTANT");
             const char *repr = strdup(current_token->tok.repr);
             switch (current_token->tok.kind) {
                 case TOK_INT_LIT:
@@ -252,7 +251,7 @@ shift_expression
 relational_expression
     : shift_expression
         {
-            debug_display("shift_expression");
+            $$ = $1;
         }
     | relational_expression '<' shift_expression
         {
@@ -275,7 +274,7 @@ relational_expression
 equality_expression
     : relational_expression
         {
-            debug_display("relational_expression");
+            $$ = $1;
         }
     | equality_expression EQ_OP relational_expression
         {
@@ -290,7 +289,7 @@ equality_expression
 and_expression
     : equality_expression
         {
-            debug_display("equality_expression");
+            $$ = $1;
         }
     | and_expression '&' equality_expression
         {
@@ -301,7 +300,7 @@ and_expression
 exclusive_or_expression
     : and_expression
         {
-            debug_display("and_expression");
+            $$ = $1;
         }
     | exclusive_or_expression '^' and_expression
         {
@@ -312,7 +311,7 @@ exclusive_or_expression
 inclusive_or_expression
     : exclusive_or_expression
         {
-            debug_display("exclusive_or_expression");
+            $$ = $1;
         }
     | inclusive_or_expression '|' exclusive_or_expression
         {
@@ -323,7 +322,7 @@ inclusive_or_expression
 logical_and_expression
     : inclusive_or_expression
         {
-            debug_display("inclusive_or_expression");
+            $$ = $1;
         }
     | logical_and_expression AND_OP inclusive_or_expression
         {
@@ -334,7 +333,7 @@ logical_and_expression
 logical_or_expression
     : logical_and_expression
         {
-            debug_display("logical_and_expression");
+            $$ = $1;
         }
     | logical_or_expression OR_OP logical_and_expression
         {
@@ -345,7 +344,7 @@ logical_or_expression
 conditional_expression
     : logical_or_expression
         {
-            debug_display("logical_or_expression");
+            $$ = $1;
         }
     | logical_or_expression '?' expression ':' conditional_expression
         {
@@ -356,7 +355,7 @@ conditional_expression
 assignment_expression
     : conditional_expression
         {
-            debug_display("conditional_expression");
+            $$ = $1;
         }
     | unary_expression assignment_operator assignment_expression
         {
@@ -414,7 +413,7 @@ assignment_operator
 expression
     : assignment_expression
         {
-            debug_display("assignment_expression");
+            $$ = $1;
         }
     | expression ',' assignment_expression
         {
@@ -455,7 +454,6 @@ declaration_specifiers
     | type_specifier
         {
             $$ = $1;
-            debug_display("declaration_specifiers::type_specifier");
         }
 
     | type_specifier declaration_specifiers
@@ -465,6 +463,7 @@ declaration_specifiers
 
     | type_qualifier
         {
+            $$ = $1;
             debug_display("type_qualifier");
         }
 
@@ -477,7 +476,7 @@ declaration_specifiers
 init_declarator_list
     : init_declarator
         {
-            debug_display("init_declarator");
+            $$ = $1;
         }
     | init_declarator_list ',' init_declarator
         {
@@ -718,14 +717,15 @@ declarator
         }
     | direct_declarator
         {
-            debug_display("direct_declarator");
+            $$ = $1;
         }
     ;
 
 direct_declarator
     : IDENTIFIER
         {
-            debug_display("IDENTIFIER");
+            char *repr = strdup(current_token->tok.repr);
+            $$ = ast_identifier_decl(repr);
         }
     | '(' declarator ')'
         {
@@ -900,7 +900,7 @@ direct_abstract_declarator
 initializer
     : assignment_expression
         {
-            debug_display("assignment_expression");
+            $$ = $1;
         }
     | '{' initializer_list '}'
         {
@@ -1077,7 +1077,7 @@ jump_statement
 translation_unit
     : external_declaration
         {
-            debug_display("external_declaration");
+            $$ = $1;
         }
     | translation_unit external_declaration
         {
